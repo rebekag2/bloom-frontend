@@ -1,18 +1,50 @@
 <div class="auth-container">
-  <h2>Sign Up</h2>
-  <form (ngSubmit)="onSubmit()" #signupForm="ngForm">
-    <label>Username</label>
-    <input type="text" name="username" [(ngModel)]="username" required />
+  <div class="auth-left">
+    <h1 class="app-title">Bloom</h1>
+    <p class="tagline">Grow your focus & mood garden.</p>
+    <img src="assets/plant-illustration.svg" alt="Plant illustration" class="plant-image" />
+  </div>
+  <div class="auth-right">
+    <h2>Create your account</h2>
+    <form (ngSubmit)="onSubmit()" #signupForm="ngForm" class="signup-form">
+      <label for="username">Username</label>
+      <input
+        id="username"
+        type="text"
+        name="username"
+        [(ngModel)]="username"
+        required
+        minlength="3"
+        placeholder="Your username"
+      />
 
-    <label>Email</label>
-    <input type="email" name="email" [(ngModel)]="email" required />
+      <label for="email">Email</label>
+      <input
+        id="email"
+        type="email"
+        name="email"
+        [(ngModel)]="email"
+        required
+        placeholder="you@example.com"
+      />
 
-    <label>Password</label>
-    <input type="password" name="password" [(ngModel)]="password" required />
+      <label for="password">Password</label>
+      <input
+        id="password"
+        type="password"
+        name="password"
+        [(ngModel)]="password"
+        required
+        minlength="6"
+        placeholder="••••••••"
+      />
 
-    <button type="submit" [disabled]="signupForm.invalid">Sign Up</button>
-  </form>
-  <p>
-    Already have an account? <a routerLink="/login">Login</a>
-  </p>
+      <button type="submit" [disabled]="signupForm.invalid" class="btn-submit">
+        Sign Up
+      </button>
+    </form>
+    <p class="signup-text">
+      Already have an account? <a routerLink="/login" class="signup-link">Log in</a>
+    </p>
+  </div>
 </div>

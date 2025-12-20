@@ -1,15 +1,38 @@
 <div class="auth-container">
-  <h2>Login</h2>
-  <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
-    <label>Email</label>
-    <input type="email" name="email" [(ngModel)]="email" required />
+  <div class="auth-left">
+    <h1 class="app-title">Bloom</h1>
+    <p class="tagline">Grow your focus & mood garden.</p>
+    <img src="assets/plant-illustration.svg" alt="Plant illustration" class="plant-image" />
+  </div>
+  <div class="auth-right">
+    <h2>Welcome back</h2>
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="login-form">
+      <label for="email">Email</label>
+      <input
+        id="email"
+        type="email"
+        name="email"
+        [(ngModel)]="email"
+        required
+        placeholder="you@example.com"
+      />
 
-    <label>Password</label>
-    <input type="password" name="password" [(ngModel)]="password" required />
+      <label for="password">Password</label>
+      <input
+        id="password"
+        type="password"
+        name="password"
+        [(ngModel)]="password"
+        required
+        placeholder="••••••••"
+      />
 
-    <button type="submit" [disabled]="loginForm.invalid">Login</button>
-  </form>
-  <p>
-    New here? <a routerLink="/signup">Sign up</a>
-  </p>
+      <button type="submit" [disabled]="loginForm.invalid" class="btn-submit">
+        Log In
+      </button>
+    </form>
+    <p class="signup-text">
+      New here? <a routerLink="/signup" class="signup-link">Create an account</a>
+    </p>
+  </div>
 </div>

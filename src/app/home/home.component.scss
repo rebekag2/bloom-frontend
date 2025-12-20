@@ -1,0 +1,48 @@
+.home-content {
+  padding: 1.5rem 2rem;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(180deg, #f7fdf8 0%, #f4fbf6 100%);
+  height: calc(100vh - 72px); /* full viewport minus fixed topbar */
+  color: #2e7d32;
+  overflow: auto; /* inner scroll, keep page fixed */
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1.25rem;
+
+  h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin: 0.5rem 0 0.5rem 0;
+    color: #2e7d32;
+  }
+
+  p {
+    font-size: 1rem;
+    max-width: 760px;
+    text-align: center;
+    line-height: 1.6;
+    margin: 0.25rem 0 1.5rem 0;
+    color: rgba(46,125,50,0.9);
+  }
+
+  button {
+    background-color: #2e7d32;
+    border: none;
+    color: white;
+    font-weight: 700;
+    padding: 0.75rem 1.75rem;
+    font-size: 1rem;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(46,125,50,0.18);
+    transition: transform 0.15s ease, background-color 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      background-color: #256026;
+    }
+  }
+}

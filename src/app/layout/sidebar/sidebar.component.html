@@ -1,1 +1,20 @@
-<p>sidebar works!</p>
+<div class="sidebar" [class.open]="isOpen">
+  <div class="sidebar-header">
+    <div class="user-info">
+      <p class="sidebar-username">{{ username }}</p>
+      <p class="sidebar-email">{{ email }}</p>
+    </div>
+    <button class="close-btn" (click)="closeSidebar.emit()">×</button>
+  </div>
+
+  <ul class="sidebar-menu">
+    <li (click)="settingsClicked.emit()">
+      <img src="assets/settings-icon.svg" alt="Settings" class="sidebar-icon" />
+      <span>Settings</span>
+    </li>
+    <li (click)="logoutClicked.emit()">
+      <img src="assets/logout-icon.svg" alt="Logout" class="sidebar-icon" />
+      <span>Logout</span>
+    </li>
+  </ul>
+</div>

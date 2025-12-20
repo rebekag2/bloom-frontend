@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
-  selector: 'app-topbar',
-  standalone: false,
+  selector: 'app-top-bar',
   templateUrl: './topbar.component.html',
-  styleUrl: './topbar.component.scss'
+  standalone: false,
+  styleUrls: ['./topbar.component.scss'],
 })
-export class TopbarComponent {
-
+export class TopBarComponent {
+  @Input() username: string = '';
+  @Output() toggleSidebar = new EventEmitter<void>();
 }

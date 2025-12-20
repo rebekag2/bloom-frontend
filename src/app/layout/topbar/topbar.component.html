@@ -1,1 +1,7 @@
-<p>topbar works!</p>
+<div class="topbar">
+  <div class="app-name">Bloom</div>
+  <div class="right-section" (click)="toggleSidebar.emit()">
+    <span class="username">{{ username }}</span>
+    <img src="assets/user-icon.svg" alt="User Icon" class="user-icon" />
+  </div>
+</div>

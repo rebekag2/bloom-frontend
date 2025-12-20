@@ -1,1 +1,21 @@
-<p>home works!</p>
+<app-top-bar
+  [username]="username"
+  (toggleSidebar)="toggleSidebar()"
+></app-top-bar>
+
+<app-sidebar
+  [isOpen]="sidebarOpen"
+  [username]="username"
+  [email]="email"
+  (closeSidebar)="toggleSidebar()"
+  (settingsClicked)="goToSettings()"
+  (logoutClicked)="logout()"
+></app-sidebar>
+
+<main class="home-content">
+   <h1>Welcome back, {{ username }}!</h1>
+  <p>Ready to start your focus session and grow your Bloom garden today?</p>
+  <button (click)="startFocusSession()">Start Focus Session</button>
+</main>
+ 
+<app-bottom-nav></app-bottom-nav>

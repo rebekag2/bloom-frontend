@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+
 
 @Component({
   selector: 'app-signup',
@@ -12,17 +14,28 @@ export class SignupComponent {
   email = '';
   password = '';
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   onSubmit() {
-    // For now, just log values or implement your signup logic here
-    console.log('Signup form submitted:', {
-      username: this.username,
-      email: this.email,
-      password: this.password,
+    this.authService.signup(this.username, this.email, this.password).subscribe({
+      next: (res) => {
+        console.log('Signup success:', res);
+        // store tokens if returned
+        if ((res as any).accessToken) {
+          localStorage.setItem('accessToken', (res as any).accessToken);
+        }
+        if ((res as any).refreshToken) {
+          localStorage.setItem('refreshToken', (res as any).refreshToken);
+        }
+        // Save user info locally
+        const stored = { email: this.email, username: this.username };
+        localStorage.setItem('user', JSON.stringify(stored));
+        this.router.navigate(['/home']);
+      },
+      error: (err) => {
+        console.error('Signup failed:', err);
+        alert('Signup failed. Please try again.');
+      },
     });
-
-    // Redirect after signup (or show message)
-    this.router.navigate(['/login']);
   }
 }
