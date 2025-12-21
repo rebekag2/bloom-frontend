@@ -14,6 +14,8 @@ export class HomeComponent implements OnInit {
   sidebarOpen = true;
   username = '';
   email = '';
+  emotions: any = null;
+  accessTokenForSwagger: string | null = null;
 
   constructor(private router: Router, private authService: AuthService, private http: HttpClient) {}
 
@@ -37,19 +39,34 @@ export class HomeComponent implements OnInit {
   logout(): void {
     this.authService.logout().subscribe({
       next: () => {
-        this.authService.clearSession();
+        this.authService.clearTokens();
         this.router.navigate(['/login']);
       },
       error: () => {
         // still clear local session on error
-        this.authService.clearSession();
+        this.authService.clearTokens();
         this.router.navigate(['/login']);
       }
     });
   }
 
-  startFocusSession(): void {
+  startFocusSession(): void { 
     // this.toggleSidebar();
     // this.router.navigate(['/focus-session']);
+    this.authService.getEmotions().subscribe({
+      next: (res) => {
+        this.emotions = res;
+        console.log('emotions:', res);
+      },
+      error: (err) => {
+        console.error('Error fetching emotions', err);
+      }
+    });
+  }
+
+  // Helper to get access token (copy/paste into Swagger "Authorize" input)
+  showAccessTokenForSwagger(): void {
+    this.accessTokenForSwagger = this.authService.getAccessToken();
+    console.log('Access token (copy for Swagger):', this.accessTokenForSwagger);
   }
 }
