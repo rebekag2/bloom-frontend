@@ -1,37 +1,50 @@
-<h2>Settings</h2>
+<div class="settings-container">
+  <h2 class="title">Settings</h2>
 
-<form [formGroup]="form" (ngSubmit)="onSubmit()">
-  <div>
-    <label>
-      <input type="checkbox" formControlName="notificationSound" />
-      Notification sound
-    </label>
-  </div>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="settings-form">
 
-  <div>
-    <label>First day of week</label>
-    <select formControlName="firstDayOfWeek">
-      <option value="Luni">Luni</option>
-      <option value="Marți">Marți</option>
-      <option value="Miercuri">Miercuri</option>
-      <option value="Joi">Joi</option>
-      <option value="Vineri">Vineri</option>
-      <option value="Sâmbătă">Sâmbătă</option>
-      <option value="Duminică">Duminică</option>
-    </select>
-  </div>
+    <!-- Notification Sound -->
+    <div class="setting-item toggle-item">
+      <label class="label-row">
+        <span>Notification Sound</span>
+        <label class="switch">
+          <input type="checkbox" formControlName="notificationSound" />
+          <span class="slider round"></span>
+        </label>
+      </label>
+    </div>
 
-  <div>
-    <label>Default timer duration (minutes)</label>
-    <select formControlName="defaultFocusTime">
-      <option [value]="25">25</option>
-      <option [value]="30">30</option>
-      <option [value]="50">50</option>
-    </select>
-  </div>
+    <!-- First Day of Week -->
+    <div class="setting-item">
+      <label class="setting-label">First Day of Week</label>
+      <select formControlName="firstDayOfWeek" class="styled-select">
+        <option value="Luni">Luni</option>
+        <option value="Marți">Marți</option>
+        <option value="Miercuri">Miercuri</option>
+        <option value="Joi">Joi</option>
+        <option value="Vineri">Vineri</option>
+        <option value="Sâmbătă">Sâmbătă</option>
+        <option value="Duminică">Duminică</option>
+      </select>
+    </div>
 
-  <button type="submit" [disabled]="loading">Save</button>
-  <span *ngIf="message">{{ message }}</span>
-</form>
+    <!-- Default Focus Time -->
+    <div class="setting-item">
+      <label class="setting-label">Default Focus Time (minutes)</label>
+      <select formControlName="defaultFocusTime" class="styled-select">
+        <option [value]="25">25</option>
+        <option [value]="30">30</option>
+        <option [value]="50">50</option>
+      </select>
+    </div>
+
+    <!-- Save Button -->
+    <button type="submit" [disabled]="loading" class="save-btn">
+      {{ loading ? 'Saving...' : 'Save Settings' }}
+    </button>
+
+    <p class="message" *ngIf="message">{{ message }}</p>
+  </form>
+</div>
 
 <app-bottom-nav></app-bottom-nav>
