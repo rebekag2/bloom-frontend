@@ -25,7 +25,12 @@ export class AuthService {
       email,
       password,
     }).pipe(
-      tap(res => this.setTokens(res.accessToken, res.refreshToken))
+      tap(res => {
+        this.setTokens(res.accessToken, res.refreshToken);
+       if (res.user) {
+          localStorage.setItem('user', JSON.stringify(res.user));
+        }
+      })
     );
   }
 
@@ -35,7 +40,12 @@ export class AuthService {
       email,
       password,
     }).pipe(
-      tap(res => this.setTokens(res.accessToken, res.refreshToken))
+      tap(res => {
+        this.setTokens(res.accessToken, res.refreshToken);
+        if (res.user) {
+          localStorage.setItem('user', JSON.stringify(res.user));
+        }
+      })
     );
   }
 
@@ -105,11 +115,10 @@ export class AuthService {
     return user ? JSON.parse(user) : null;
   }
 
-  /**
-   * Call protected GET /emotions endpoint. Interceptor will attach Authorization header.
-   * Returns the raw observable so callers can subscribe and inspect results (useful for testing).
-   */
-  getEmotions(): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/emotions`);
+ getUserId(): number | null {
+    const u = this.getUser();
+    if (!u) return null;
+    if (typeof u.id === 'number') return u.id;
+    return null;
   }
 }

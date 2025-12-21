@@ -1,17 +1,37 @@
-<!-- settings.component.html -->
 <h2>Settings</h2>
-<p>Notification sound: <input type="checkbox" /></p>
-<p>First day of week:
-  <select>
-    <option>Monday</option>
-    <option>Sunday</option>
-  </select>
-</p>
-<p>Default timer duration:
-  <select>
-    <option>25 minutes</option>
-    <option>50 minutes</option>
-  </select>
-</p>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div>
+    <label>
+      <input type="checkbox" formControlName="notificationSound" />
+      Notification sound
+    </label>
+  </div>
+
+  <div>
+    <label>First day of week</label>
+    <select formControlName="firstDayOfWeek">
+      <option value="Luni">Luni</option>
+      <option value="Marți">Marți</option>
+      <option value="Miercuri">Miercuri</option>
+      <option value="Joi">Joi</option>
+      <option value="Vineri">Vineri</option>
+      <option value="Sâmbătă">Sâmbătă</option>
+      <option value="Duminică">Duminică</option>
+    </select>
+  </div>
+
+  <div>
+    <label>Default timer duration (minutes)</label>
+    <select formControlName="defaultFocusTime">
+      <option [value]="25">25</option>
+      <option [value]="30">30</option>
+      <option [value]="50">50</option>
+    </select>
+  </div>
+
+  <button type="submit" [disabled]="loading">Save</button>
+  <span *ngIf="message">{{ message }}</span>
+</form>
 
 <app-bottom-nav></app-bottom-nav>

@@ -53,15 +53,15 @@ export class HomeComponent implements OnInit {
   startFocusSession(): void { 
     // this.toggleSidebar();
     // this.router.navigate(['/focus-session']);
-    this.authService.getEmotions().subscribe({
-      next: (res) => {
-        this.emotions = res;
-        console.log('emotions:', res);
-      },
-      error: (err) => {
-        console.error('Error fetching emotions', err);
-      }
-    });
+    // this.authService.getEmotions().subscribe({
+    //   next: (res) => {
+    //     this.emotions = res;
+    //     console.log('emotions:', res);
+    //   },
+    //   error: (err) => {
+    //     console.error('Error fetching emotions', err);
+    //   }
+    // });
   }
 
   // Helper to get access token (copy/paste into Swagger "Authorize" input)
