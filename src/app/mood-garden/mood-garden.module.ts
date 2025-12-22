@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { MoodGardenRoutingModule } from './mood-garden-routing.module';
 import { MoodGardenComponent } from './mood-garden.component';
+import { SharedModule } from '../shared/shared.module';
 
 
 @NgModule({
@@ -11,7 +12,8 @@ import { MoodGardenComponent } from './mood-garden.component';
   ],
   imports: [
     CommonModule,
-    MoodGardenRoutingModule
+    MoodGardenRoutingModule,
+    SharedModule
   ]
 })
 export class MoodGardenModule { }

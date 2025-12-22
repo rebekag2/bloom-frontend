@@ -4,13 +4,13 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { TopBarComponent } from '../layout/topbar/topbar.component';
 import { SidebarComponent } from '../layout/sidebar/sidebar.component';
-import { BottomNavComponent } from '../layout/bottom-nav/bottom-nav.component';
 import { AuthInterceptor } from '../interceptors/auth.interceptor';
+import { FocusSessionDialogComponent } from '../focus-session/focus-session-dialog.component';
 
 @NgModule({
-  declarations: [TopBarComponent, SidebarComponent, BottomNavComponent],
+  declarations: [TopBarComponent, SidebarComponent, FocusSessionDialogComponent],
   imports: [CommonModule],
-  exports: [TopBarComponent, SidebarComponent, BottomNavComponent],
+  exports: [TopBarComponent, SidebarComponent],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
   ]

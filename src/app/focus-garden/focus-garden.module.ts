@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { FocusGardenRoutingModule } from './focus-garden-routing.module';
 import { FocusGardenComponent } from './focus-garden.component';
+import { SharedModule } from '../shared/shared.module';
 
 
 @NgModule({
@@ -11,7 +12,8 @@ import { FocusGardenComponent } from './focus-garden.component';
   ],
   imports: [
     CommonModule,
-    FocusGardenRoutingModule
+    FocusGardenRoutingModule,
+    SharedModule
   ]
 })
 export class FocusGardenModule { }

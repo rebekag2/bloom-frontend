@@ -20,6 +20,11 @@ const routes: Routes = [
     loadChildren: () => import('./focus-session/focus-session.module').then(m => m.FocusSessionModule)
   },
   {
+    path: 'focus-session/:id',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./focus-session/focus-session.module').then(m => m.FocusSessionModule)
+  },
+  {
     path: 'overview',
     canActivate: [AuthGuard],
     loadChildren: () => import('./overview/overview.module').then(m => m.OverviewModule)

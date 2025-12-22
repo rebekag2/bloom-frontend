@@ -1,0 +1,26 @@
+<div class="dialog-container">
+  <h2>
+    {{ data.mode === 'before'
+      ? 'How are you feeling before this session?'
+      : 'How are you feeling after this session?' }}
+  </h2>
+
+  <div class="emotions-grid">
+    <div
+      *ngFor="let emotion of emotions"
+      class="emotion-card"
+      [class.selected]="emotion.id === selectedEmotionId"
+      (click)="selectEmotion(emotion.id)"
+    >
+      <div class="emoji">{{ emotionIcons[emotion.name] || '🌼' }}</div>
+      <div class="emotion-label">{{ emotion.name }}</div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn-secondary" (click)="cancel()">Cancel</button>
+    <button class="btn-primary" [disabled]="!selectedEmotionId" (click)="confirm()">
+      {{ data.mode === 'before' ? 'Start session' : 'Finish session' }}
+    </button>
+  </div>
+</div>

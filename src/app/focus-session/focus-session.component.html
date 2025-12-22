@@ -1,1 +1,29 @@
-<p>focus-session works!</p>
+<app-top-bar></app-top-bar>
+
+<div class="session-container">
+
+  <div class="tree-placeholder">
+    🌳
+  </div>
+
+  <!-- TIMER + ADJUST BUTTONS -->
+  <div class="timer-controls">
+    <button class="adjust-btn" (click)="adjustTime(-5)">−</button>
+
+    <div class="timer">
+      {{ formatTime(timeLeft) }}
+    </div>
+
+    <button class="adjust-btn" (click)="adjustTime(5)">+</button>
+  </div>
+
+  <!-- START / CANCEL BUTTONS -->
+  <button *ngIf="!timerRunning" class="start-btn" (click)="startTimer()">
+    Start
+  </button>
+
+  <button *ngIf="timerRunning" class="cancel-btn" (click)="cancelSession()">
+    Cancel
+  </button>
+
+</div>

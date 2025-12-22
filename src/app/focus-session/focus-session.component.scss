@@ -1,0 +1,41 @@
+.timer-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.adjust-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: #e8e8e8;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.adjust-btn:hover {
+  background: #dcdcdc;
+}
+
+.timer {
+  font-size: 48px;
+  font-weight: 600;
+  width: 140px;
+  text-align: center;
+}
+
+.start-btn {
+  padding: 12px 24px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  background-color: #4caf50;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}

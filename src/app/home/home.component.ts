@@ -3,6 +3,10 @@ import { Router } from '@angular/router';
 
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
+import { FocusSessionDialogComponent } from '../focus-session/focus-session-dialog.component';
+import { FocusSessionService } from '../services/focus-session.service';
+import { SettingsService } from '../services/settings.service';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-home',
@@ -17,7 +21,8 @@ export class HomeComponent implements OnInit {
   emotions: any = null;
   accessTokenForSwagger: string | null = null;
 
-  constructor(private router: Router, private authService: AuthService, private http: HttpClient) {}
+  constructor(private router: Router, private authService: AuthService, private http: HttpClient, private focusSessionService: FocusSessionService,
+     private settingsService: SettingsService, private dialog: MatDialog ) {}
 
   ngOnInit(): void {
     const user = this.authService.getUser();
@@ -52,19 +57,48 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  startFocusSession(): void { 
-    // this.toggleSidebar();
-    // this.router.navigate(['/focus-session']);
-    // this.authService.getEmotions().subscribe({
-    //   next: (res) => {
-    //     this.emotions = res;
-    //     console.log('emotions:', res);
-    //   },
-    //   error: (err) => {
-    //     console.error('Error fetching emotions', err);
-    //   }
-    // });
-  }
+ startFocusSession(): void {
+  const dialogRef = this.dialog.open(FocusSessionDialogComponent, {
+    width: '560px',
+    data: { mode: 'before' }
+  });
+
+  dialogRef.afterClosed().subscribe((emotionBeforeId: number | null) => {
+    if (!emotionBeforeId) return; // user canceled
+
+    const user = this.authService.getUser();
+    if (!user) return;
+
+    // 1. Load settings from backend
+    this.settingsService.getSettings(user.id).subscribe({
+      next: (settings) => {
+        const duration = settings.defaultFocusTime ?? 25;
+
+        // 2. Start session with backend duration + selected emotion
+        this.focusSessionService.startSession({
+          durationMinutes: duration,
+          emotionBeforeId: emotionBeforeId
+        }).subscribe({
+          next: (session) => {
+            console.log('Focus session started:', session);
+            this.router.navigate(
+              ['/focus-session', session.id],
+              { queryParams: { duration: session.durationMinutes } }
+            );
+          },
+          error: (err) => {
+            console.error('Failed to start focus session', err);
+            alert('Could not start focus session.');
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Failed to load settings', err);
+        alert('Could not load settings.');
+      }
+    });
+  });
+}
 
   // Helper to get access token (copy/paste into Swagger "Authorize" input)
   showAccessTokenForSwagger(): void {

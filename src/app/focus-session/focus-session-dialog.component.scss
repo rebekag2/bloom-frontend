@@ -1,0 +1,90 @@
+.dialog-container {
+  padding: 20px;
+  max-width: 520px;
+  font-family: 'Inter', sans-serif;
+}
+
+h2 {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 18px;
+}
+
+.emotions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.emotion-card {
+  background: #fafafa;
+  border-radius: 14px;
+  padding: 10px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  border: 1px solid transparent;
+}
+
+.emotion-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.emotion-card.selected {
+  border-color: #4a8cff;
+  box-shadow: 0 4px 14px rgba(74,140,255,0.2);
+  background: #f3f6ff;
+}
+
+.emoji {
+  font-size: 26px;
+  margin-bottom: 6px;
+}
+
+.emotion-label {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.emotion-description {
+  font-size: 12px;
+  color: #666;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-primary,
+.btn-secondary {
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #4a8cff;
+  color: white;
+}
+
+.btn-primary:disabled {
+  background: #b6c9ff;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: #eee;
+  color: #333;
+}
