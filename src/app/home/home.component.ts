@@ -40,12 +40,14 @@ export class HomeComponent implements OnInit {
     this.authService.logout().subscribe({
       next: () => {
         this.authService.clearTokens();
-        this.router.navigate(['/login']);
+        localStorage.removeItem('user');
+        this.router.navigate(['/auth/login']);
       },
       error: () => {
         // still clear local session on error
         this.authService.clearTokens();
-        this.router.navigate(['/login']);
+        localStorage.removeItem('user');
+        this.router.navigate(['/auth/login']);
       }
     });
   }

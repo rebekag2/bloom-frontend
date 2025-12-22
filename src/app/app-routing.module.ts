@@ -1,39 +1,46 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { 
-    path: 'auth', 
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+
+  {
+    path: 'auth',
     loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)
   },
-  { path: 'login', redirectTo: 'auth/login', pathMatch: 'full' },
-  { path: 'signup', redirectTo: 'auth/signup', pathMatch: 'full' },
-  { 
-    path: 'home', 
-    loadChildren: () => import('./home/home.module').then(m => m.HomeModule) 
+  {
+    path: 'home',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./home/home.module').then(m => m.HomeModule)
   },
-  { 
-    path: 'focus-session', 
-    loadChildren: () => import('./focus-session/focus-session.module').then(m => m.FocusSessionModule) 
+  {
+    path: 'focus-session',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./focus-session/focus-session.module').then(m => m.FocusSessionModule)
   },
-  { 
-    path: 'overview', 
-    loadChildren: () => import('./overview/overview.module').then(m => m.OverviewModule) 
+  {
+    path: 'overview',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./overview/overview.module').then(m => m.OverviewModule)
   },
-  { 
-    path: 'focus-garden', 
-    loadChildren: () => import('./focus-garden/focus-garden.module').then(m => m.FocusGardenModule) 
+  {
+    path: 'focus-garden',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./focus-garden/focus-garden.module').then(m => m.FocusGardenModule)
   },
-  { 
-    path: 'mood-garden', 
-    loadChildren: () => import('./mood-garden/mood-garden.module').then(m => m.MoodGardenModule) 
+  {
+    path: 'mood-garden',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./mood-garden/mood-garden.module').then(m => m.MoodGardenModule)
   },
-  { 
-    path: 'settings', 
-    loadChildren: () => import('./settings/settings.module').then(m => m.SettingsModule) 
+  {
+    path: 'settings',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./settings/settings.module').then(m => m.SettingsModule)
   },
-  { path: '**', redirectTo: 'login' },
+
+  { path: '**', redirectTo: 'auth/login' }
 ];
 
 @NgModule({

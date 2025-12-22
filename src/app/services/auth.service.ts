@@ -18,7 +18,9 @@ export class AuthService {
   private accessToken: string | null = null; // keep in memory
   private readonly refreshKey = 'refreshToken';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    this.accessToken = localStorage.getItem('accessToken');
+  }
 
   login(email: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.baseUrl}/users/login`, {
@@ -79,6 +81,7 @@ export class AuthService {
     try {
       localStorage.removeItem(this.refreshKey);
       localStorage.removeItem('accessToken');
+      localStorage.removeItem('user');
     } catch (e) {
       // ignore
     }
