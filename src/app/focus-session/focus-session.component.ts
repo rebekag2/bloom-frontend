@@ -30,7 +30,8 @@ export class FocusSessionComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.sessionId = Number(this.route.snapshot.paramMap.get('id'));
     this.duration = Number(this.route.snapshot.queryParamMap.get('duration'));
-    this.timeLeft = this.duration * 60;
+    // this.timeLeft = this.duration * 60;
+    this.timeLeft = 30; // For testing purposes, set to 30 seconds
 
     // Save original navigate()
     this.originalNavigate = this.router.navigate.bind(this.router);

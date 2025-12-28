@@ -27,7 +27,7 @@ export class FocusSessionService {
   }
 
   finishSession(id: number, body: { emotionAfterId: number }) {
-    return this.http.patch(`${this.baseUrl}/focus-session/session/${id}/finish`, body);
+    return this.http.patch(`${this.baseUrl}/focus-sessions/session/${id}/finish`, body);
   }
 
   cancelSession(id: number, body: { focusedMinutes: number }) {
