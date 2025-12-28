@@ -15,6 +15,7 @@ export class FocusSessionComponent implements OnInit, OnDestroy {
   sessionId!: number;
   duration!: number;
   timeLeft!: number;
+  totalTime!: number;   // ⭐ needed for progress ring
   timerRunning = false;
   interval: any;
 
@@ -30,8 +31,14 @@ export class FocusSessionComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.sessionId = Number(this.route.snapshot.paramMap.get('id'));
     this.duration = Number(this.route.snapshot.queryParamMap.get('duration'));
-    // this.timeLeft = this.duration * 60;
-    this.timeLeft = 30; // For testing purposes, set to 30 seconds
+
+    // NORMAL MODE:
+    this.timeLeft = this.duration * 60;
+
+    // TEST MODE (uncomment to test after-session dialog fast)
+    // this.timeLeft = 30;
+
+    this.totalTime = this.timeLeft; // ⭐ store original time for progress ring + focusedMinutes
 
     // Save original navigate()
     this.originalNavigate = this.router.navigate.bind(this.router);
@@ -48,29 +55,25 @@ export class FocusSessionComponent implements OnInit, OnDestroy {
 
       if (!confirmCancel) return false;
 
-      const focusedMinutes = Math.floor((this.duration * 60 - this.timeLeft) / 60);
+      const focusedMinutes = Math.floor((this.totalTime - this.timeLeft) / 60);
 
       await this.focusSessionService.cancelSession(this.sessionId, {
         focusedMinutes
       }).toPromise();
 
-      // Disable override after cancel
       this.timerRunning = false;
       this.router.navigate = this.originalNavigate;
 
       return this.originalNavigate(...args);
     };
 
-    // Prevent browser tab closing
     window.addEventListener('beforeunload', this.beforeUnloadHandler);
   }
 
   ngOnDestroy(): void {
-    // Restore original navigate()
     if (this.originalNavigate) {
       this.router.navigate = this.originalNavigate;
     }
-
     window.removeEventListener('beforeunload', this.beforeUnloadHandler);
   }
 
@@ -81,17 +84,55 @@ export class FocusSessionComponent implements OnInit, OnDestroy {
     }
   };
 
-  // ⭐ ADJUST TIME BY ±5 MINUTES ⭐
+  // 🌱 Evolution stage
+get plantStage(): string {
+  if (this.progress < 0.33) return 'sprout';
+  if (this.progress < 0.66) return 'plant';
+  return 'tree';
+}
+
+// 🌿 Growth scale (smooth)
+get plantScale(): number {
+  return 0.7 + this.progress * 0.6;
+}
+
+// 🌳 Pop animation trigger
+justEvolved = false;
+
+ngDoCheck() {
+  const stage = this.plantStage;
+  if (stage !== this.lastStage) {
+    this.justEvolved = true;
+    setTimeout(() => this.justEvolved = false, 400);
+    this.lastStage = stage;
+  }
+}
+
+private lastStage = 'sprout';
+
+
+  // ⭐ PROGRESS FOR CIRCULAR TIMER (0–1)
+  get progress(): number {
+    if (!this.totalTime) return 0;
+    return (this.totalTime - this.timeLeft) / this.totalTime;
+  }
+
+  // ⭐ CIRCLE CIRCUMFERENCE (needed for SVG ring)
+  get circleCircumference(): number {
+    return 2 * Math.PI * 52; // 52 = radius of your SVG circle
+  }
+
+  // ⭐ ADJUST TIME BY ±5 MINUTES
   adjustTime(minutes: number) {
     if (this.timerRunning) return;
 
     const newMinutes = this.timeLeft / 60 + minutes;
 
-    if (newMinutes < 5) return;      // minimum 5 minutes
-    if (newMinutes > 180) return;    // maximum 3 hours
+    if (newMinutes < 5) return;
+    if (newMinutes > 180) return;
 
     this.timeLeft = newMinutes * 60;
-
+    this.totalTime = this.timeLeft; // ⭐ keep progress ring correct
   }
 
   startTimer() {
@@ -120,9 +161,8 @@ export class FocusSessionComponent implements OnInit, OnDestroy {
 
     clearInterval(this.interval);
 
-    const focusedMinutes = Math.floor((this.duration * 60 - this.timeLeft) / 60);
+    const focusedMinutes = Math.floor((this.totalTime - this.timeLeft) / 60);
 
-    // Disable override before navigating
     this.timerRunning = false;
     this.router.navigate = this.originalNavigate;
 
@@ -145,7 +185,7 @@ export class FocusSessionComponent implements OnInit, OnDestroy {
       this.focusSessionService.finishSession(this.sessionId, {
         emotionAfterId
       }).subscribe(() => {
-        this.router.navigate(['/overview']);
+          this.router.navigate(['/overview']);
       });
     });
   }
