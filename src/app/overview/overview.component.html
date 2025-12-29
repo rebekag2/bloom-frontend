@@ -1,2 +1,22 @@
-<app-top-bar></app-top-bar> 
-<p>overview works!</p>
+<app-top-bar></app-top-bar>
+
+<div class="garden-page">
+  <div class="island-container">
+
+    <!-- Floating Island -->
+    <img src="assets/island.png" class="island" alt="Floating Island" />
+
+    <!-- Trees + Flowers -->
+    <div class="items-layer">
+      <div
+        *ngFor="let item of items"
+        class="garden-item"
+        [style.left.%]="item.x"
+        [style.top.%]="item.y"
+      >
+        <div class="emoji">{{ item.icon }}</div>
+      </div>
+    </div>
+
+  </div>
+</div>

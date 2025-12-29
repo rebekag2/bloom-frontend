@@ -1,0 +1,56 @@
+/* PAGE BACKGROUND */
+.garden-page {
+  height: 100vh;
+  background: linear-gradient(135deg, #DFF9F3, #C3F6EA);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* ISLAND CONTAINER */
+.island-container {
+  position: relative;
+  width: 650px;
+  height: 450px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* FLOATING ISLAND */
+.island {
+  width: 100%;
+  height: auto;
+  animation: islandFloat 6s ease-in-out infinite;
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.15));
+}
+
+@keyframes islandFloat {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+  100% { transform: translateY(0); }
+}
+
+/* FLOWERS LAYER */
+.items-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.flower-item {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.emoji {
+  font-size: 42px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translate(-50%, -50%) translateY(0); }
+  50% { transform: translate(-50%, -50%) translateY(-6px); }
+  100% { transform: translate(-50%, -50%) translateY(0); }
+}

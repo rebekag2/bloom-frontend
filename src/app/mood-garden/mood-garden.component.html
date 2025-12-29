@@ -1,2 +1,22 @@
-<app-top-bar></app-top-bar> 
-<p>mood-garden works!</p>
+<app-top-bar></app-top-bar>
+
+<div class="garden-page">
+  <div class="island-container">
+
+    <!-- Floating Island -->
+    <img src="assets/island.png" class="island" alt="Floating Island" />
+
+    <!-- Flowers -->
+    <div class="items-layer">
+      <div
+        *ngFor="let flower of flowers"
+        class="flower-item"
+        [style.left.%]="flower.x"
+        [style.top.%]="flower.y"
+      >
+        <div class="emoji">{{ flower.icon }}</div>
+      </div>
+    </div>
+
+  </div>
+</div>
