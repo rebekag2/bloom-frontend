@@ -8,7 +8,9 @@
         <circle class="progress-ring__background" cx="60" cy="60" r="52"></circle>
         <circle
           class="progress-ring__progress"
-          cx="60" cy="60" r="52"
+          cx="60"
+          cy="60"
+          r="52"
           [attr.stroke-dasharray]="circleCircumference"
           [attr.stroke-dashoffset]="(1 - progress) * circleCircumference"
         ></circle>

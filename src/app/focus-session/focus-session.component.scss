@@ -1,3 +1,4 @@
+/* PAGE BACKGROUND */
 .session-page {
   min-height: 100vh;
   width: 100%;
@@ -5,72 +6,76 @@
   justify-content: center;
   align-items: center;
 
-  /* 🌿 Calm, modern, premium green gradient */
+  /* Bloom mint gradient */
   background: linear-gradient(
     135deg,
-    #dff5e3 0%,
-    #c8ecd1 35%,
-    #b7e3c4 70%,
-    #a8d9b8 110%
+    #DFF9F3 0%,
+    #C3F6EA 35%,
+    #B8F0E4 70%,
+    #A8E8D9 110%
   );
 
-  /* Soft vignette for depth */
   position: relative;
   overflow: hidden;
 }
 
+/* Soft glow in the center */
 .session-page::before {
   content: "";
   position: absolute;
   inset: 0;
   background: radial-gradient(
     circle at center,
-    rgba(255, 255, 255, 0.35) 0%,
-    rgba(255, 255, 255, 0) 60%
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0) 65%
   );
   pointer-events: none;
   z-index: 0;
 }
 
-
+/* MAIN CARD */
 .session-card {
   background: #ffffff;
-  border-radius: 24px;
-  padding: 28px;
-  max-width: 380px;
+  border-radius: 32px;
+  padding: 40px;
+  max-width: 520px;
   width: 100%;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
   z-index: 10;
+
+  /* slightly lifted center */
+  margin-top: -40px;
 }
 
+/* TIMER CIRCLE */
 .circle-wrapper {
   position: relative;
-  width: 260px;
-  height: 260px;
-  margin-bottom: 12px;
+  width: 340px;
+  height: 340px;
+  margin-bottom: 20px;
 }
 
 .progress-ring {
   position: absolute;
   top: 0;
   left: 0;
-  width: 260px;
-  height: 260px;
+  width: 340px;
+  height: 340px;
   transform: rotate(-90deg);
 }
 
 .progress-ring__background {
   fill: none;
-  stroke: #e3f3e7;
+  stroke: #CDEFE8; /* soft mint */
   stroke-width: 12;
 }
 
 .progress-ring__progress {
   fill: none;
-  stroke: #6ac27d;
+  stroke: #7FDAC7; /* Bloom mint */
   stroke-width: 12;
   stroke-linecap: round;
   transition: stroke-dashoffset 0.3s linear;
@@ -84,19 +89,19 @@
   justify-content: center;
 }
 
-/* 🌿 TIME BELOW CIRCLE WHEN RUNNING */
+/* TIME WHEN RUNNING */
 .running-time {
-  font-size: 42px;
+  font-size: 54px;
   font-weight: 700;
-  color: #2f4f3a;
-  margin-bottom: 20px;
+  color: #1E5F52;
+  margin-bottom: 24px;
 }
 
-/* 🌱 PLANT EMOJI + GROUND */
+/* PLANT + GROUND */
 .plant-wrapper {
   position: relative;
-  width: 90px;
-  height: 110px; /* taller to fit ground */
+  width: 120px;
+  height: 150px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -105,13 +110,13 @@
 }
 
 .plant-emoji {
-  font-size: 72px;
+  font-size: 92px;
   z-index: 2;
 }
 
 .ground {
-  width: 90px;
-  height: 25px;
+  width: 120px;
+  height: 30px;
   background: #8b5a2b;
   border-radius: 50%;
   margin-top: -12px;
@@ -129,7 +134,7 @@
   100% { transform: scale(1); }
 }
 
-/* 🌱 Sprout wiggle */
+/* Sprout wiggle */
 .sprout-wiggle {
   animation: sproutWiggle 2.4s ease-in-out infinite;
 }
@@ -141,21 +146,20 @@
   100% { transform: rotate(0deg); }
 }
 
-/* 🌿 Plant breathing */
+/* Plant breathing */
 .plant-breathe, .plant-emoji { 
   animation: plantBreathe 3.8s ease-in-out infinite;
 }
 
 @keyframes plantBreathe {
   0%   { transform: translateY(0) scale(1); }
-  20%  { transform: translateY(-4px) scale(1.10); } /* inhale start */
-  45%  { transform: translateY(-7px) scale(1.16); } /* full inhale */
-  65%  { transform: translateY(-3px) scale(1.08); } /* exhale */
-  100% { transform: translateY(0) scale(1); }       /* rest */
+  20%  { transform: translateY(-4px) scale(1.10); }
+  45%  { transform: translateY(-7px) scale(1.16); }
+  65%  { transform: translateY(-3px) scale(1.08); }
+  100% { transform: translateY(0) scale(1); }
 }
 
-
-/* 🌿 Plant sway */
+/* Plant sway */
 .plant-sway {
   animation: plantSway 4s ease-in-out infinite;
 }
@@ -166,7 +170,7 @@
   100% { transform: rotate(0deg); }
 }
 
-/* 🌳 Tree sway */
+/* Tree sway */
 .tree-sway {
   animation: treeSway 5s ease-in-out infinite;
 }
@@ -178,7 +182,7 @@
   100% { transform: rotate(0deg); }
 }
 
-/* 🌳 Tree pulse */
+/* Tree pulse */
 .tree-canopy-pulse {
   animation: canopyPulse 4s ease-in-out infinite;
 }
@@ -198,31 +202,32 @@
 }
 
 .adjust-btn {
-  width: 52px;
-  height: 52px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   border: none;
-  background: #eef7f0;
-  font-size: 28px;
+  background: #E8F3F1;
+  font-size: 32px;
   font-weight: 600;
-  color: #2f4f3a;
+  color: #1E5F52;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.1s ease;
 }
 
 .adjust-btn:not(:disabled):hover {
-  background: #e0f0e3;
+  background: #D6EBE7;
   transform: translateY(-1px);
 }
 
 .duration-display {
-  font-size: 32px;
+  font-size: 40px;
   font-weight: 700;
-  color: #42614b;
-  min-width: 90px;
+  color: #1E5F52;
+  min-width: 110px;
   text-align: center;
 }
 
+/* ACTION BUTTONS */
 .actions {
   display: flex;
   justify-content: center;
@@ -240,23 +245,25 @@
   transition: transform 0.1s ease, background 0.15s ease;
 }
 
+/* Start = Bloom mint */
 .start-btn {
-  background: #6ac27d;
-  color: #ffffff;
-  box-shadow: 0 10px 24px rgba(106, 194, 125, 0.35);
+  background: #9EE8D8;
+  color: #1E5F52;
+  box-shadow: 0 10px 24px rgba(158, 232, 216, 0.35);
 }
 
 .start-btn:hover {
-  background: #5ab06f;
+  background: #7FDAC7;
   transform: translateY(-1px);
 }
 
+/* Cancel = soft mint grey */
 .cancel-btn {
-  background: #f1f1f1;
-  color: #444;
+  background: #E8F3F1;
+  color: #1E5F52;
 }
 
 .cancel-btn:hover {
-  background: #e5e5e5;
+  background: #D6EBE7;
   transform: translateY(-1px);
 }

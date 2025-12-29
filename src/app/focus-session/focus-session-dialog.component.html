@@ -1,15 +1,18 @@
 <div class="dialog-container">
   <h2 class="title">
     {{ data.mode === 'before'
-      ? 'How are you feeling before this session?'
-      : 'How are you feeling after this session?' }}
+      ? 'Cum te simți înainte de această sesiune?'
+      : 'Cum te simți după această sesiune?' }}
   </h2>
 
   <div class="emotions-grid">
     <div
       *ngFor="let emotion of emotions"
       class="emotion-card"
-      [class.selected]="emotion.id === selectedEmotionId"
+      [ngClass]="[
+        emotion.id === selectedEmotionId ? 'selected' : '',
+        emotion.name.toLowerCase()
+      ]"
       (click)="selectEmotion(emotion.id)"
     >
       <img
@@ -23,10 +26,10 @@
   </div>
 
   <div class="actions">
-    <button class="btn-secondary" (click)="cancel()">Cancel</button>
+    <button class="btn-secondary" (click)="cancel()">Anulează</button>
 
     <button class="btn-primary" [disabled]="!selectedEmotionId" (click)="confirm()">
-      {{ data.mode === 'before' ? 'Continue' : 'Save' }}
+      {{ data.mode === 'before' ? 'Continuă' : 'Salvează' }}
     </button>
   </div>
 </div>
