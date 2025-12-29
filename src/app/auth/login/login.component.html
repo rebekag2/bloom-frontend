@@ -1,39 +1,30 @@
-<div class="auth-container">
+<div class="auth-wrapper">
   <div class="auth-left">
     <h1 class="app-title">Bloom</h1>
-    <p class="tagline">Grow your focus & mood garden.</p>
-    <img src="assets/plant-illustration.svg" alt="Plant illustration" class="plant-image" />
+    <img src="assets/illustrations/illustration.png" alt="Ilustrație Bloom" class="auth-illustration" />
   </div>
+
   <div class="auth-right">
-    <h2>Welcome back</h2>
-    <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="login-form">
-      <label for="email">Email</label>
-      <input
-        id="email"
-        type="email"
-        name="email"
-        [(ngModel)]="email"
-        required
-        placeholder="you@example.com"
-      />
+    <div class="auth-card">
+      <h2>Autentificare</h2>
 
-      <label for="password">Password</label>
-      <input
-        id="password"
-        type="password"
-        name="password"
-        [(ngModel)]="password"
-        required
-        placeholder="••••••••"
-      />
+      <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="auth-form">
 
-      <button type="submit" [disabled]="loginForm.invalid" class="btn-submit">
-        Log In
-      </button>
-    </form>
-    <p class="signup-text">
-      New here? <a routerLink="/auth/signup" class="signup-link">Create an account</a>
-    </p>
+        <label for="email">Email</label>
+        <input id="email" type="email" name="email" [(ngModel)]="email" required placeholder="tu@exemplu.com" />
+
+        <label for="password">Parolă</label>
+        <input id="password" type="password" name="password" [(ngModel)]="password" required placeholder="••••••••" />
+
+        <button type="submit" [disabled]="loginForm.invalid" class="btn-submit">
+          Autentifică-te
+        </button>
+      </form>
+
+      <p class="switch-text">
+        Ești nou aici?
+        <a routerLink="/auth/signup" class="switch-link">Creează un cont</a>
+      </p>
+    </div>
   </div>
 </div>
-

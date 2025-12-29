@@ -1,50 +1,56 @@
-<div class="auth-container">
+<div class="auth-wrapper">
   <div class="auth-left">
     <h1 class="app-title">Bloom</h1>
-    <p class="tagline">Grow your focus & mood garden.</p>
-    <img src="assets/plant-illustration.svg" alt="Plant illustration" class="plant-image" />
+    <img src="assets/illustrations/illustration.png" alt="Ilustrație Bloom" class="auth-illustration" />
   </div>
+
   <div class="auth-right">
-    <h2>Create your account</h2>
-    <form (ngSubmit)="onSubmit()" #signupForm="ngForm" class="signup-form">
-      <label for="username">Username</label>
-      <input
-        id="username"
-        type="text"
-        name="username"
-        [(ngModel)]="username"
-        required
-        minlength="3"
-        placeholder="Your username"
-      />
+    <div class="auth-card">
+      <h2>Creează un cont</h2>
 
-      <label for="email">Email</label>
-      <input
-        id="email"
-        type="email"
-        name="email"
-        [(ngModel)]="email"
-        required
-        placeholder="you@example.com"
-      />
+      <form (ngSubmit)="onSubmit()" #signupForm="ngForm" class="auth-form">
 
-      <label for="password">Password</label>
-      <input
-        id="password"
-        type="password"
-        name="password"
-        [(ngModel)]="password"
-        required
-        minlength="6"
-        placeholder="••••••••"
-      />
+        <label for="username">Nume utilizator</label>
+        <input
+          id="username"
+          type="text"
+          name="username"
+          [(ngModel)]="username"
+          required
+          minlength="3"
+          placeholder="Numele tău"
+        />
 
-      <button type="submit" [disabled]="signupForm.invalid" class="btn-submit">
-        Sign Up
-      </button>
-    </form>
-    <p class="signup-text">
-      Already have an account? <a routerLink="/auth/login" class="signup-link">Log in</a>
-    </p>
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          name="email"
+          [(ngModel)]="email"
+          required
+          placeholder="tu@exemplu.com"
+        />
+
+        <label for="password">Parolă</label>
+        <input
+          id="password"
+          type="password"
+          name="password"
+          [(ngModel)]="password"
+          required
+          minlength="6"
+          placeholder="••••••••"
+        />
+
+        <button type="submit" [disabled]="signupForm.invalid" class="btn-submit">
+          Creează cont
+        </button>
+      </form>
+
+      <p class="switch-text">
+        Ai deja un cont?
+        <a routerLink="/auth/login" class="switch-link">Autentifică-te</a>
+      </p>
+    </div>
   </div>
 </div>
