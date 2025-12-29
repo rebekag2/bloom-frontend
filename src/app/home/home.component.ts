@@ -7,6 +7,7 @@ import { FocusSessionDialogComponent } from '../focus-session/focus-session-dial
 import { FocusSessionService } from '../services/focus-session.service';
 import { SettingsService } from '../services/settings.service';
 import { MatDialog } from '@angular/material/dialog';
+import { LogoutConfirmDialogComponent } from './logout-confirm-dialog.component';
 
 @Component({
   selector: 'app-home',
@@ -41,7 +42,14 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/settings']);
   }
 
-  logout(): void {
+ logout(): void {
+  const dialogRef = this.dialog.open(LogoutConfirmDialogComponent, {
+    width: '380px'
+  });
+
+  dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+    if (!confirmed) return;
+
     this.authService.logout().subscribe({
       next: () => {
         this.authService.clearTokens();
@@ -49,13 +57,13 @@ export class HomeComponent implements OnInit {
         this.router.navigate(['/auth/login']);
       },
       error: () => {
-        // still clear local session on error
         this.authService.clearTokens();
         localStorage.removeItem('user');
         this.router.navigate(['/auth/login']);
       }
     });
-  }
+  });
+}
 
  startFocusSession(): void {
   const dialogRef = this.dialog.open(FocusSessionDialogComponent, {

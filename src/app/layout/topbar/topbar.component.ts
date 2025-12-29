@@ -10,6 +10,8 @@ import { Router } from '@angular/router';
 export class TopBarComponent {
   @Input() username: string = '';
   @Output() toggleSidebar = new EventEmitter<void>();
+  @Output() settingsClicked = new EventEmitter<void>();
+  @Output() logoutClicked = new EventEmitter<void>();
 
   constructor(private router: Router) {}
   
@@ -17,4 +19,7 @@ export class TopBarComponent {
   goFocusGarden() { this.router.navigate(['/focus-garden']); } 
   goMoodGarden() { this.router.navigate(['/mood-garden']); } 
   goOverview() { this.router.navigate(['/overview']); }
+
+  onSettings() { this.settingsClicked.emit(); }
+  onLogout() { this.logoutClicked.emit(); }
 }

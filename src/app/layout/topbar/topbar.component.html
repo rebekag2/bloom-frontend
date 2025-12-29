@@ -1,30 +1,33 @@
 <div class="topbar">
-  <div class="app-name">Bloom</div>
+  <div class="left-section">
+    <div class="app-name">Bloom</div>
+  </div>
 
-  <div class="nav-items">
-    <button mat-icon-button (click)="goHome()">
-      <span class="material-icons">home</span>
-      <span class="label">Home</span>
+  <div class="center-nav">
+    <button class="nav-btn" (click)="goHome()">
+      <img src="assets/icons/home.png" class="icon" />
     </button>
 
-    <button mat-icon-button (click)="goFocusGarden()">
-      <span class="material-icons">park</span>
-      <span class="label">Focus</span>
+    <button class="nav-btn" (click)="goFocusGarden()">
+      <img src="assets/icons/tree.png" class="icon" />
     </button>
 
-    <button mat-icon-button (click)="goMoodGarden()">
-      <span class="material-icons">spa</span>
-      <span class="label">Mood</span>
+    <button class="nav-btn" (click)="goMoodGarden()">
+      <img src="assets/icons/flowers.png" class="icon" />
     </button>
 
-    <button mat-icon-button (click)="goOverview()">
-      <span class="material-icons">insights</span>
-      <span class="label">Overview</span>
+    <button class="nav-btn" (click)="goOverview()">
+      <img src="assets/icons/search.png" class="icon" />
+    </button>
+  </div>
+
+  <div class="right-actions">
+    <button class="action-btn" (click)="onSettings()">
+      <img src="assets/icons/settings.png" class="icon" />
     </button>
 
-    <div class="user-section" (click)="toggleSidebar.emit()">
-      <span class="username">{{ username }}</span>
-      <span class="material-icons user-icon">account_circle</span>
-    </div>
+    <button class="action-btn" (click)="onLogout()">
+      <img src="assets/icons/exit.png" class="icon" />
+    </button>
   </div>
 </div>

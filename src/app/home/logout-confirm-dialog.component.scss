@@ -1,0 +1,40 @@
+.dialog-container {
+  padding: 1.5rem;
+  text-align: center;
+  font-family: "Quicksand", sans-serif;
+}
+
+h2 {
+  font-size: 1.3rem;
+  margin-bottom: 1.5rem;
+  color: #1E5F52;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+button {
+  padding: 0.6rem 1.4rem;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-family: "Quicksand", sans-serif;
+  font-weight: 600;
+}
+
+.cancel {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.confirm {
+  background: #9EE8D8;
+  color: #1E5F52;
+}
+
+.confirm:hover {
+  background: #7FDAC7;
+}

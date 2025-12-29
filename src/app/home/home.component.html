@@ -1,16 +1,9 @@
 <app-top-bar
   [username]="username"
   (toggleSidebar)="toggleSidebar()"
-></app-top-bar>
-
-<app-sidebar
-  [isOpen]="sidebarOpen"
-  [username]="username"
-  [email]="email"
-  (closeSidebar)="toggleSidebar()"
   (settingsClicked)="goToSettings()"
   (logoutClicked)="logout()"
-></app-sidebar>
+></app-top-bar>
 
 <main class="home-wrapper">
 

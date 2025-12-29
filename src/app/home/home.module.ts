@@ -6,15 +6,17 @@ import { HomeComponent } from './home.component';
 import { SharedModule } from '../shared/shared.module';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FocusSessionDialogComponent } from '../focus-session/focus-session-dialog.component';
+import { LogoutConfirmDialogComponent } from './logout-confirm-dialog.component';
 
 @NgModule({
   declarations: [
     HomeComponent,
+    LogoutConfirmDialogComponent
   ],
   imports: [
     CommonModule,
     HomeRoutingModule,
-    SharedModule
+    SharedModule,
   ]
 })
 export class HomeModule { }
