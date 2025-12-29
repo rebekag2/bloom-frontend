@@ -12,13 +12,14 @@ export class FocusSessionDialogComponent implements OnInit {
   emotions: Emotion[] = [];
   selectedEmotionId: number | null = null;
 
-  emotionIcons: Record<string, string> = {
-    Calm: '🌿',
-    Focused: '🌱',
-    Stressed: '🌪️',
-    Tired: '🥀',
-    Motivated: '🌸',
-    Distracted: '🍃'
+  // NEW: PNG flower mapping
+  flowerImages: Record<string, string> = {
+    Fericit: 'assets/flowers/fericit.png',
+    Neutru: 'assets/flowers/neutru.png',
+    Obosit: 'assets/flowers/obosit.png',
+    Trist: 'assets/flowers/trist.png',
+    Anxios: 'assets/flowers/anxios.png',
+    Motivat: '../assets/flowers/motivat.png'
   };
 
   constructor(
@@ -29,9 +30,12 @@ export class FocusSessionDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.emotionService.getEmotions().subscribe({
-      next: (res) => this.emotions = res,
+      next: (res) => { console.log('Loaded emotions:', res);
+        this.emotions = res;
+      },
       error: () => alert('Could not load emotions')
     });
+
   }
 
   selectEmotion(id: number) {

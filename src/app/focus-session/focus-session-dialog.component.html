@@ -1,5 +1,5 @@
 <div class="dialog-container">
-  <h2>
+  <h2 class="title">
     {{ data.mode === 'before'
       ? 'How are you feeling before this session?'
       : 'How are you feeling after this session?' }}
@@ -12,15 +12,21 @@
       [class.selected]="emotion.id === selectedEmotionId"
       (click)="selectEmotion(emotion.id)"
     >
-      <div class="emoji">{{ emotionIcons[emotion.name] || '🌼' }}</div>
+      <img
+        class="emotion-image"
+        [src]="flowerImages[emotion.name]"
+        alt="{{ emotion.name }}"
+      />
+
       <div class="emotion-label">{{ emotion.name }}</div>
     </div>
   </div>
 
   <div class="actions">
     <button class="btn-secondary" (click)="cancel()">Cancel</button>
+
     <button class="btn-primary" [disabled]="!selectedEmotionId" (click)="confirm()">
-      {{ data.mode === 'before' ? 'Start session' : 'Finish session' }}
+      {{ data.mode === 'before' ? 'Continue' : 'Save' }}
     </button>
   </div>
 </div>

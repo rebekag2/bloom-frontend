@@ -12,9 +12,23 @@
   (logoutClicked)="logout()"
 ></app-sidebar>
 
-<main class="home-content">
-   <h1>Welcome back, {{ username }}!</h1>
-  <p>Ready to start your focus session and grow your Bloom garden today?</p>
-  <button (click)="startFocusSession()">Start Focus Session</button>
+<main class="home-wrapper">
+
+  <!-- TOP-LEFT DECORATION -->
+  <img src="assets/illustrations/corner.png" class="decor-top-left" alt="" />
+
+  <!-- LEFT SIDE (text) -->
+  <div class="left-content">
+    <h1>Unde concentrarea și starea ta se întâlnesc</h1>
+    <p>
+      Concentrează‑te, observă‑ți starea și mergi mai departe cu intenție.
+    </p>
+    <button (click)="startFocusSession()">Începe sesiunea</button>
+  </div>
+
+  <!-- RIGHT SIDE (illustration) -->
+  <div class="right-illustration">
+    <img src="assets/illustrations/home2.jpg" alt="Bloom illustration" />
+  </div>
+
 </main>
- 
