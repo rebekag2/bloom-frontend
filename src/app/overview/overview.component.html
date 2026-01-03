@@ -1,22 +1,19 @@
 <app-top-bar></app-top-bar>
 
-<div class="garden-page">
-  <div class="island-container">
+<div class="garden-area">
+  <div *ngFor="let item of items"
+       class="plant"
+       [style.left.%]="item.x"
+       [style.top.%]="item.y"
+       [style.transform]="'translate(-50%, -50%) scale(' + item.scale + ')'">
 
-    <!-- Floating Island -->
-    <img src="assets/island.png" class="island" alt="Floating Island" />
+    <img *ngIf="item.type === 'tree'"
+         [src]="item.icon"
+         class="tree-img" />
 
-    <!-- Trees + Flowers -->
-    <div class="items-layer">
-      <div
-        *ngFor="let item of items"
-        class="garden-item"
-        [style.left.%]="item.x"
-        [style.top.%]="item.y"
-      >
-        <div class="emoji">{{ item.icon }}</div>
-      </div>
-    </div>
+    <img *ngIf="item.type === 'flower'"
+         [src]="item.icon"
+         class="flower-img" />
 
   </div>
 </div>
