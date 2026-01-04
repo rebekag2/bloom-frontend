@@ -1,12 +1,92 @@
 <app-top-bar></app-top-bar>
 
-<div class="garden-area">
-  <div *ngFor="let flower of flowers"
-       class="plant"
-       [style.left.%]="flower.x"
-       [style.top.%]="flower.y"
-       [style.transform]="'translate(-50%, -50%) scale(' + flower.scale + ')'">
+<div class="layout">
 
-    <img [src]="flower.icon" class="flower-img" />
+  <!-- FLOWERS -->
+  <div class="left-panel">
+    <div class="garden-area">
+      <div *ngFor="let flower of flowers"
+           class="plant"
+           [style.left.%]="flower.x"
+           [style.top.%]="flower.y"
+           [style.transform]="'translate(-50%, -50%) scale(' + flower.scale + ')'">
+        <img [src]="flower.icon" class="flower-img" />
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+
+    <!-- Time selection -->
+    <div class="controls-wrapper">
+      <div class="segment-control">
+        <button [class.active]="mode === 'week'" (click)="setMode('week')">Săptămână</button>
+        <button [class.active]="mode === 'month'" (click)="setMode('month')">Lună</button>
+        <button [class.active]="mode === 'year'" (click)="setMode('year')">An</button>
+      </div>
+
+      <div class="interval-nav">
+        <button (click)="prevInterval()">&lt;</button>
+        <span>{{ intervalLabel }}</span>
+        <button (click)="nextInterval()">&gt;</button>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Emoții înainte și după sesiuni</span>
+      </div>
+      <div class="chart-container">
+        <canvas id="moodChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Insights -->
+    <div class="insights-card" *ngIf="insights.length">
+      <h3>Ce am observat</h3>
+      <ul>
+        <li *ngFor="let line of insights" [innerHTML]="line"></li>
+      </ul>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend-card">
+      <h3>Legendă emoții</h3>
+
+      <div class="legend-grid">
+        <div class="legend-item">
+          <img src="/assets/flowers/fericit.png">
+          <span>Fericit</span>
+        </div>
+
+        <div class="legend-item">
+          <img src="/assets/flowers/motivat.png">
+          <span>Motivat</span>
+        </div>
+
+        <div class="legend-item">
+          <img src="/assets/flowers/neutru.png">
+          <span>Neutru</span>
+        </div>
+
+        <div class="legend-item">
+          <img src="/assets/flowers/obosit.png">
+          <span>Obosit</span>
+        </div>
+
+        <div class="legend-item">
+          <img src="/assets/flowers/trist.png">
+          <span>Trist</span>
+        </div>
+
+        <div class="legend-item">
+          <img src="/assets/flowers/anxios.png">
+          <span>Anxios</span>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
