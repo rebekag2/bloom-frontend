@@ -1,19 +1,58 @@
 <app-top-bar></app-top-bar>
 
-<div class="garden-area">
-  <div *ngFor="let item of items"
-       class="plant"
-       [style.left.%]="item.x"
-       [style.top.%]="item.y"
-       [style.transform]="'translate(-50%, -50%) scale(' + item.scale + ')'">
+<div class="layout">
 
-    <img *ngIf="item.type === 'tree'"
-         [src]="item.icon"
-         class="tree-img" />
+  <!-- STÂNGA: GRĂDINA FULL SCREEN -->
+  <div class="garden-area">
+    <div *ngFor="let item of items"
+         class="plant"
+         [style.left.%]="item.x"
+         [style.top.%]="item.y"
+         [style.transform]="'translate(-50%, -50%) scale(' + item.scale + ')'">
 
-    <img *ngIf="item.type === 'flower'"
-         [src]="item.icon"
-         class="flower-img" />
+      <img *ngIf="item.type === 'tree'" [src]="item.icon" class="tree-img" />
+      <img *ngIf="item.type === 'flower'" [src]="item.icon" class="flower-img" />
+
+    </div>
+  </div>
+
+  <!-- DREAPTA: PANOU GLASS -->
+  <div class="right-panel">
+
+      <!-- CARD 1: GRĂDINA COMBINATĂ -->
+      <div class="overview-card main-card">
+          <h2>Grădina ta combinată</h2>
+
+          <div class="mini-info">
+              <p><span>Sesiuni de focus:</span> {{ totalSessions }}</p>
+              <p><span>Emoția dominantă:</span> {{ dominantEmotion }}</p>
+          </div>
+
+          <p class="desc">
+              Aici vezi copacii și florile tale împreună — progresul și emoțiile într-un singur loc.
+          </p>
+      </div>
+
+      <!-- CARD 2: FOCUS -->
+      <div class="overview-card sub-card">
+          <h3>Grădina de Focus</h3>
+          <p>Explorează copacii tăi și evoluția sesiunilor de concentrare.</p>
+
+          <a routerLink="/focus-garden" class="btn blue-btn">
+              Mergi la Grădina de Focus →
+          </a>
+      </div>
+
+      <!-- CARD 3: MOOD -->
+      <div class="overview-card sub-card">
+          <h3>Grădina Emoțiilor</h3>
+          <p>Descoperă florile tale emoționale și stările care au înflorit cel mai des.</p>
+
+          <a routerLink="/mood-garden" class="btn blue-btn">
+              Mergi la Grădina Emoțiilor →
+          </a>
+      </div>
 
   </div>
+
 </div>

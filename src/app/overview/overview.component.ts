@@ -19,6 +19,11 @@ export class OverviewComponent implements OnInit {
 
   items: GardenItem[] = [];
 
+  // Stats for right panel
+  totalSessions = 0;
+  dominantEmotion: string | null = null;
+  dominantEmotionIcon: string | null = null;
+
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
@@ -28,6 +33,12 @@ export class OverviewComponent implements OnInit {
   loadOverviewGarden() {
     this.http.get<any[]>('http://localhost:3000/focus-sessions/with-emotions')
       .subscribe(sessions => {
+
+        // --- STATS ---
+        this.totalSessions = sessions.length;
+        this.computeDominantEmotion(sessions);
+
+        // --- PLANTS ---
         const items: GardenItem[] = [];
 
         sessions.forEach(session => {
@@ -45,13 +56,15 @@ export class OverviewComponent implements OnInit {
           });
 
           // BEFORE FLOWER
-          items.push({
-            icon: this.mapEmotionToFlower(session.emotionBefore),
-            x: 0,
-            y: 0,
-            type: 'flower',
-            scale: 0.9 + Math.random() * 0.2
-          });
+          if (session.emotionBefore) {
+            items.push({
+              icon: this.mapEmotionToFlower(session.emotionBefore),
+              x: 0,
+              y: 0,
+              type: 'flower',
+              scale: 0.9 + Math.random() * 0.2
+            });
+          }
 
           // AFTER FLOWER
           if (isCompleted && session.emotionAfter) {
@@ -69,6 +82,25 @@ export class OverviewComponent implements OnInit {
       });
   }
 
+  // --- DOMINANT EMOTION ---
+  computeDominantEmotion(sessions: any[]) {
+    const counts: Record<string, number> = {};
+
+    sessions.forEach(s => {
+      const emo = s.emotionAfter || s.emotionBefore;
+      if (!emo) return;
+      counts[emo] = (counts[emo] || 0) + 1;
+    });
+
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+
+    if (sorted.length > 0) {
+      this.dominantEmotion = sorted[0][0];
+      this.dominantEmotionIcon = this.mapEmotionToFlower(sorted[0][0]);
+    }
+  }
+
+  // --- PLACEMENT (unchanged) ---
   placeItems(plants: GardenItem[]) {
     const areaWidth = 60;
     const areaTop = 30;
@@ -101,6 +133,7 @@ export class OverviewComponent implements OnInit {
     });
   }
 
+  // --- EMOTION TO FLOWER ---
   mapEmotionToFlower(emotion: string): string {
     switch (emotion) {
       case 'Motivat': return '/assets/flowers/motivat.png';
