@@ -1,26 +1,45 @@
-.garden-area {
-  position: relative;
-  width: 100%;
-  height: 100vh;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-  background-image: url('/assets/illustrations/backg.png');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center bottom;
-
-  overflow: visible;
+* {
+  font-family: 'Inter', sans-serif;
+  box-sizing: border-box;
 }
 
-/* Ground shadow band */
+/* --- FULL BACKGROUND --- */
+
+.layout {
+  position: relative;
+  height: calc(100vh - 60px);
+  width: 100%;
+  overflow: hidden;
+
+  /* Landscape full background, positioned lower */
+  background-image: url('/assets/illustrations/backg.png');
+  background-size: cover;
+  background-position: center 80%; /* moved lower */
+}
+
+/* LEFT PANEL (invisible, only for tree placement) */
+
+.left-panel {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.garden-area {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
 .garden-area::after {
   content: "";
   position: absolute;
   bottom: 0;
-  left: 0;
   width: 100%;
   height: 20vh;
-  background: linear-gradient(to top, rgba(0,0,0,0.15), transparent);
-  pointer-events: none;
+  background: linear-gradient(to top, rgba(0,0,0,0.18), transparent);
 }
 
 .plant {
@@ -29,33 +48,192 @@
   animation:
     fadeIn 0.8s ease forwards,
     sway 4s ease-in-out infinite alternate;
-  pointer-events: none;
 }
 
-/* Fade-in animation */
 @keyframes fadeIn {
   from { opacity: 0; transform: translate(-50%, -60%) scale(0.9); }
   to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
 
-/* Sway animation */
 @keyframes sway {
   from { transform: translate(-50%, -50%) rotate(-1deg); }
   to   { transform: translate(-50%, -50%) rotate(1deg); }
 }
 
-/* Soft shadows */
 .tree-img {
   width: 100px;
-  height: auto;
   filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
-  user-select: none;
-  pointer-events: none;
+}
+
+/* --- FLOATING GLASS RIGHT PANEL (BIGGER + NICER) --- */
+
+.right-panel {
+  position: absolute;
+  right: 50px;
+  top: 52%; /* slightly lower */
+  transform: translateY(-50%);
+
+  width: 45vw;          /* bigger */
+  max-width: 580px;     /* bigger */
+  min-width: 380px;
+
+  padding: 36px;
+
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+
+  border-radius: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.22),
+    0 0 0 1px rgba(139, 196, 138, 0.25);
+
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Centered controls */
+
+.controls-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Floating glass segmented control */
+
+.segment-control {
+  display: flex;
+  padding: 8px;
+  gap: 8px;
+
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.segment-control button {
+  padding: 12px 26px;
+  border-radius: 16px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 600;
+  color: #2F3A2F;
+  transition: 0.25s ease;
+}
+
+.segment-control button:hover {
+  background: rgba(139, 196, 138, 0.25);
+}
+
+.segment-control button.active {
+  background: #8BC48A;
+  color: #1f2a1f;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transform: translateY(-1px);
+}
+
+/* Navigation arrows */
+
+.interval-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.interval-nav button {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  border: none;
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  font-size: 20px;
+  transition: 0.25s ease;
+}
+
+.interval-nav button:hover {
+  background: #8BC48A;
+  transform: translateY(-2px);
+}
+
+.interval-nav span {
+  font-weight: 600;
+  color: #2F3A2F;
+  font-size: 16px;
+}
+
+/* Chart card */
+
+.chart-card {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(14px);
+  border-radius: 26px;
+  padding: 26px;
+  height: 280px;
+
+  box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+  transition: 0.3s ease;
+}
+
+.chart-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.14);
+}
+
+/* Stats cards */
+
+.stats-row {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+}
+
+.stat-card {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(14px);
+  border-radius: 26px;
+  padding: 24px;
+  text-align: center;
+
+  box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+  transition: 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.14);
+}
+
+.stat-card h3 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  color: #2F3A2F;
+}
+
+.stat-card p {
+  margin: 6px 0 0;
+  font-size: 15px;
+  opacity: 0.7;
 }
 
 /* Responsive */
-@media (max-width: 600px) {
-  .tree-img {
-    width: 85px;
+
+@media (max-width: 900px) {
+  .right-panel {
+    position: static;
+    transform: none;
+    width: calc(100% - 40px);
+    margin: 20px auto;
   }
 }

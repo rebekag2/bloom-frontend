@@ -1,12 +1,64 @@
 <app-top-bar></app-top-bar>
 
-<div class="garden-area">
-  <div *ngFor="let plant of gardenItems"
-       class="plant"
-       [style.left.%]="plant.x"
-       [style.top.%]="plant.y"
-       [style.transform]="'translate(-50%, -50%) scale(' + plant.scale + ')'">
+<div class="layout">
 
-    <img [src]="plant.icon" class="tree-img" />
+  <!-- LEFT: GARDEN -->
+  <div class="left-panel">
+    <div class="garden-area">
+      <div *ngFor="let plant of gardenItems"
+           class="plant"
+           [style.left.%]="plant.x"
+           [style.top.%]="plant.y"
+           [style.transform]="'translate(-50%, -50%) scale(' + plant.scale + ')'">
+
+        <img [src]="plant.icon" class="tree-img" />
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: STATS -->
+  <div class="right-panel">
+
+    <div class="controls-wrapper">
+
+      <!-- Floating glass segmented control -->
+      <div class="segment-control">
+        <button [class.active]="mode === 'week'" (click)="setMode('week')">Săptămână</button>
+        <button [class.active]="mode === 'month'" (click)="setMode('month')">Lună</button>
+        <button [class.active]="mode === 'year'" (click)="setMode('year')">An</button>
+      </div>
+
+      <!-- Navigation arrows -->
+      <div class="interval-nav">
+        <button (click)="prevInterval()">&lt;</button>
+        <span>{{ intervalLabel }}</span>
+        <button (click)="nextInterval()">&gt;</button>
+      </div>
+
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-card">
+      <canvas id="focusChart"></canvas>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <h3>{{ totalSessions }}</h3>
+        <p>Sesiuni</p>
+      </div>
+
+      <div class="stat-card">
+        <h3>{{ completedSessions }}</h3>
+        <p>Finalizate</p>
+      </div>
+
+      <div class="stat-card">
+        <h3>{{ totalMinutes }}</h3>
+        <p>Minute concentrate</p>
+      </div>
+    </div>
+
   </div>
 </div>
