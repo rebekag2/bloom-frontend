@@ -1,6 +1,8 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import Chart from 'chart.js/auto';
+import { SettingsService } from '../services/settings.service';
+import { AuthService } from '../services/auth.service';
 
 interface FlowerItem {
   icon: string;
@@ -36,14 +38,27 @@ export class MoodGardenComponent implements OnInit, AfterViewInit, OnDestroy {
 
   insights: string[] = [];
 
+  firstDayOfWeek: 'Luni' | 'Duminică' = 'Luni'; 
+
   private moodChart: Chart | null = null;
 
   private emotionOrder = ['Anxios', 'Trist', 'Obosit', 'Neutru', 'Motivat', 'Fericit'];
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private settingsService: SettingsService, 
+    private auth: AuthService                
+  ) {}
 
   ngOnInit(): void {
-    this.loadSessions();
+    const userId = this.auth.getUserId();
+
+    if (userId) {
+      this.settingsService.getSettings(userId).subscribe(settings => {
+        this.firstDayOfWeek = settings.firstDayOfWeek;
+        this.loadSessions();
+      });
+    }
   }
 
   ngAfterViewInit() {
@@ -403,7 +418,7 @@ export class MoodGardenComponent implements OnInit, AfterViewInit, OnDestroy {
       {
         label: 'Înainte',
         data: beforeData,
-        borderColor: '#BFC3C9', // muted grey
+        borderColor: '#BFC3C9',
         backgroundColor: 'rgba(191,195,201,0.25)',
         fill: false,
         tension: 0.35,
@@ -414,7 +429,7 @@ export class MoodGardenComponent implements OnInit, AfterViewInit, OnDestroy {
       {
         label: 'După',
         data: afterData,
-        borderColor: '#7DBF7A', // soft green
+        borderColor: '#7DBF7A',
         backgroundColor: 'rgba(125,191,122,0.25)',
         fill: true,
         tension: 0.35,
@@ -427,6 +442,7 @@ export class MoodGardenComponent implements OnInit, AfterViewInit, OnDestroy {
     this.moodChart.update();
   }
 
+  // ⭐ WEEK RANGE WITH FIRST-DAY-OF-WEEK LOGIC
   private getRangeForMode(mode: ViewMode, date: Date) {
     if (mode === 'week') return this.getWeekRange(date);
     if (mode === 'month') return this.getMonthRange(date);
@@ -435,10 +451,18 @@ export class MoodGardenComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private getWeekRange(date: Date) {
     const d = new Date(date);
-    const day = d.getDay();
-    const diffToMonday = (day + 6) % 7;
-    const start = new Date(d);
-    start.setDate(d.getDate() - diffToMonday);
+    const day = d.getDay(); // 0=Sun, 1=Mon...
+
+    let start = new Date(d);
+
+    if (this.firstDayOfWeek === 'Luni') {
+      const diffToMonday = (day + 6) % 7;
+      start.setDate(d.getDate() - diffToMonday);
+    } else {
+      const diffToSunday = day;
+      start.setDate(d.getDate() - diffToSunday);
+    }
+
     start.setHours(0, 0, 0, 0);
 
     const end = new Date(start);
@@ -448,7 +472,7 @@ export class MoodGardenComponent implements OnInit, AfterViewInit, OnDestroy {
     return { start, end };
   }
 
-  private getMonthRange(date: Date) {
+    private getMonthRange(date: Date) {
     const start = new Date(date.getFullYear(), date.getMonth(), 1);
     const end = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
     return { start, end };

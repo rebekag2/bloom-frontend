@@ -3,6 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FocusSessionService } from '../services/focus-session.service';
 import { MatDialog } from '@angular/material/dialog';
 import { FocusSessionDialogComponent } from '../focus-session/focus-session-dialog.component';
+import { SettingsService } from '../services/settings.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-focus-session',
@@ -15,9 +17,12 @@ export class FocusSessionComponent implements OnInit, OnDestroy {
   sessionId!: number;
   duration!: number;
   timeLeft!: number;
-  totalTime!: number;   // ⭐ needed for progress ring
+  totalTime!: number;
   timerRunning = false;
   interval: any;
+
+  // ⭐ NEW: store user setting
+  notificationSoundEnabled = false;
 
   private originalNavigate: any;
 
@@ -25,25 +30,29 @@ export class FocusSessionComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private dialog: MatDialog,
-    private focusSessionService: FocusSessionService
+    private focusSessionService: FocusSessionService,
+    private settingsService: SettingsService,   // ⭐ NEW
+    private auth: AuthService                   // ⭐ NEW
   ) {}
 
   ngOnInit(): void {
+
+    // ⭐ LOAD USER SETTINGS
+    const userId = this.auth.getUserId();
+    if (userId) {
+      this.settingsService.getSettings(userId).subscribe(settings => {
+        this.notificationSoundEnabled = settings.notificationSound;
+      });
+    }
+
     this.sessionId = Number(this.route.snapshot.paramMap.get('id'));
     this.duration = Number(this.route.snapshot.queryParamMap.get('duration'));
 
-    // NORMAL MODE:
     this.timeLeft = this.duration * 60;
+    this.totalTime = this.timeLeft;
 
-    // TEST MODE (uncomment to test after-session dialog fast)
-    // this.timeLeft = 30;
-
-    this.totalTime = this.timeLeft; // ⭐ store original time for progress ring + focusedMinutes
-
-    // Save original navigate()
     this.originalNavigate = this.router.navigate.bind(this.router);
 
-    // Override navigate()
     this.router.navigate = async (...args: any[]) => {
       if (!this.timerRunning) {
         return this.originalNavigate(...args);
@@ -84,32 +93,38 @@ export class FocusSessionComponent implements OnInit, OnDestroy {
     }
   };
 
-  // 🌱 Evolution stage
-get plantStage(): string {
-  if (this.progress < 0.33) return 'sprout';
-  if (this.progress < 0.66) return 'plant';
-  return 'tree';
-}
-
-// 🌿 Growth scale (smooth)
-get plantScale(): number {
-  return 0.7 + this.progress * 0.6;
-}
-
-// 🌳 Pop animation trigger
-justEvolved = false;
-
-ngDoCheck() {
-  const stage = this.plantStage;
-  if (stage !== this.lastStage) {
-    this.justEvolved = true;
-    setTimeout(() => this.justEvolved = false, 400);
-    this.lastStage = stage;
+  // ⭐ PLAY SOUND FUNCTION
+  playSound() {
+    const audio = new Audio('/assets/sounds/notification.wav');
+    audio.volume = 0.8;
+    audio.play().catch(() => {});
   }
-}
 
-private lastStage = 'sprout';
+  // 🌱 Evolution stage
+  get plantStage(): string {
+    if (this.progress < 0.33) return 'sprout';
+    if (this.progress < 0.66) return 'plant';
+    return 'tree';
+  }
 
+  // 🌿 Growth scale (smooth)
+  get plantScale(): number {
+    return 0.7 + this.progress * 0.6;
+  }
+
+  // 🌳 Pop animation trigger
+  justEvolved = false;
+
+  ngDoCheck() {
+    const stage = this.plantStage;
+    if (stage !== this.lastStage) {
+      this.justEvolved = true;
+      setTimeout(() => this.justEvolved = false, 400);
+      this.lastStage = stage;
+    }
+  }
+
+  private lastStage = 'sprout';
 
   // ⭐ PROGRESS FOR CIRCULAR TIMER (0–1)
   get progress(): number {
@@ -117,12 +132,12 @@ private lastStage = 'sprout';
     return (this.totalTime - this.timeLeft) / this.totalTime;
   }
 
-  // ⭐ CIRCLE CIRCUMFERENCE (needed for SVG ring)
+  // ⭐ CIRCLE CIRCUMFERENCE
   get circleCircumference(): number {
-    return 2 * Math.PI * 52; // 52 = radius of your SVG circle
+    return 2 * Math.PI * 52;
   }
 
-  // ⭐ ADJUST TIME BY ±5 MINUTES
+  // ⭐ ADJUST TIME
   adjustTime(minutes: number) {
     if (this.timerRunning) return;
 
@@ -132,7 +147,7 @@ private lastStage = 'sprout';
     if (newMinutes > 180) return;
 
     this.timeLeft = newMinutes * 60;
-    this.totalTime = this.timeLeft; // ⭐ keep progress ring correct
+    this.totalTime = this.timeLeft;
   }
 
   startTimer() {
@@ -144,6 +159,13 @@ private lastStage = 'sprout';
       if (this.timeLeft <= 0) {
         clearInterval(this.interval);
         this.timerRunning = false;
+
+        // ⭐ PLAY SOUND ONLY IF ENABLED
+        if (this.notificationSoundEnabled) {
+          this.playSound();
+        }
+
+        // ⭐ THEN OPEN THE DIALOG
         this.openPostSessionDialog();
       }
     }, 1000);
@@ -185,7 +207,7 @@ private lastStage = 'sprout';
       this.focusSessionService.finishSession(this.sessionId, {
         emotionAfterId
       }).subscribe(() => {
-          this.router.navigate(['/overview']);
+        this.router.navigate(['/overview']);
       });
     });
   }

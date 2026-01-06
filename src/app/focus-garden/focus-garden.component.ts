@@ -1,6 +1,8 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import Chart from 'chart.js/auto';
+import { SettingsService } from '../services/settings.service';
+import { AuthService } from '../services/auth.service';
 
 interface SessionWithEmotions {
   id: number;
@@ -40,11 +42,28 @@ export class FocusGardenComponent implements OnInit, AfterViewInit, OnDestroy {
   totalSessions = 0;
   completedSessions = 0;
 
+  firstDayOfWeek: 'Luni' | 'Duminică' = 'Luni'; // ⭐ Loaded from settings
+
   private chart: Chart | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private settingsService: SettingsService,
+    private auth: AuthService
+  ) {}
 
   ngOnInit() {
+    const userId = this.auth.getUserId();
+
+      if (userId) {
+        this.settingsService.getSettings(userId).subscribe(settings => {
+          this.firstDayOfWeek = settings.firstDayOfWeek;
+          this.loadSessions();
+        });
+      }
+  } 
+  
+  loadSessions() {
     this.http.get<SessionWithEmotions[]>('http://localhost:3000/focus-sessions/with-emotions')
       .subscribe(sessions => {
         this.allSessions = sessions;
@@ -189,7 +208,7 @@ export class FocusGardenComponent implements OnInit, AfterViewInit, OnDestroy {
       data: {
         labels: [],
         datasets: [{
-          label: 'Focused minutes',
+          label: 'Minute concentrate',
           data: [],
           backgroundColor: '#8BC48A',
           borderRadius: 6,
@@ -200,17 +219,10 @@ export class FocusGardenComponent implements OnInit, AfterViewInit, OnDestroy {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-          x: {
-            grid: { display: false }
-          },
-          y: {
-            beginAtZero: true,
-            grid: { color: 'rgba(0,0,0,0.05)' }
-          }
+          x: { grid: { display: false } },
+          y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }
         },
-        plugins: {
-          legend: { display: false }
-        }
+        plugins: { legend: { display: false } }
       }
     });
 
@@ -223,18 +235,35 @@ export class FocusGardenComponent implements OnInit, AfterViewInit, OnDestroy {
     let labels: string[] = [];
     let data: number[] = [];
 
+    // ⭐ WEEK MODE WITH FIRST-DAY-OF-WEEK LOGIC
     if (this.mode === 'week') {
-      const { start } = this.getWeekRange(this.currentDate);
-      labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+      if (this.firstDayOfWeek === 'Luni') {
+        labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      } else {
+        labels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      }
+
       data = new Array(7).fill(0);
 
       this.filteredSessions.forEach(s => {
         const d = new Date(s.startTime);
-        const dayIndex = (d.getDay() + 6) % 7; // Monday=0
+        const jsDay = d.getDay(); // 0=Sun, 1=Mon...
+
+        let dayIndex;
+
+        if (this.firstDayOfWeek === 'Luni') {
+          dayIndex = (jsDay + 6) % 7; // Monday = 0
+        } else {
+          dayIndex = jsDay; // Sunday = 0
+        }
+
         data[dayIndex] += s.durationMinutes || 0;
       });
+    }
 
-    } else if (this.mode === 'month') {
+    // ⭐ MONTH MODE (unchanged)
+    else if (this.mode === 'month') {
       const year = this.currentDate.getFullYear();
       const month = this.currentDate.getMonth();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -247,8 +276,10 @@ export class FocusGardenComponent implements OnInit, AfterViewInit, OnDestroy {
         const day = d.getDate();
         data[day - 1] += s.durationMinutes || 0;
       });
+    }
 
-    } else {
+    // ⭐ YEAR MODE (unchanged)
+    else {
       labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       data = new Array(12).fill(0);
 
@@ -274,10 +305,18 @@ export class FocusGardenComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private getWeekRange(date: Date) {
     const d = new Date(date);
-    const day = d.getDay(); // 0=Sun
-    const diffToMonday = (day + 6) % 7;
-    const start = new Date(d);
-    start.setDate(d.getDate() - diffToMonday);
+    const day = d.getDay(); // 0=Sun, 1=Mon...
+
+    let start = new Date(d);
+
+    if (this.firstDayOfWeek === 'Luni') {
+      const diffToMonday = (day + 6) % 7;
+      start.setDate(d.getDate() - diffToMonday);
+    } else {
+      const diffToSunday = day;
+      start.setDate(d.getDate() - diffToSunday);
+    }
+
     start.setHours(0, 0, 0, 0);
 
     const end = new Date(start);
