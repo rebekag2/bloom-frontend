@@ -18,7 +18,7 @@ export interface FocusSessionResponse {
   providedIn: 'root',
 })
 export class FocusSessionService {
-  private baseUrl = 'http://localhost:3000';
+  private baseUrl = '/backend';
 
   constructor(private http: HttpClient) {}
 

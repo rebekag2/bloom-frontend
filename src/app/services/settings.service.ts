@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
-  private baseUrl = 'http://localhost:3000';
+  private baseUrl = '/backend';
 
   constructor(private http: HttpClient) {}
 

@@ -20,14 +20,7 @@ export class SignupComponent {
     this.authService.signup(this.username, this.email, this.password).subscribe({
       next: (res) => {
         console.log('Signup success:', res);
-        // store tokens if returned
-        if ((res as any).accessToken) {
-          localStorage.setItem('accessToken', (res as any).accessToken);
-        }
-        if ((res as any).refreshToken) {
-          localStorage.setItem('refreshToken', (res as any).refreshToken);
-        }
-        // Save user info locally
+        // AuthService handles tokens (access token in memory). backend should set refresh token cookie.
         const stored = { email: this.email, username: this.username };
         localStorage.setItem('user', JSON.stringify(stored));
         this.router.navigate(['/home']);

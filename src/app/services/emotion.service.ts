@@ -9,7 +9,7 @@ export interface Emotion {
 
 @Injectable({ providedIn: 'root' })
 export class EmotionService {
-  private baseUrl = 'http://localhost:3000';
+  private baseUrl = '/backend';
 
   constructor(private http: HttpClient) {}
 

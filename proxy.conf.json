@@ -1,0 +1,10 @@
+{
+  "/backend": {
+    "target": "http://localhost:3000",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "cookieDomainRewrite": "localhost",
+    "pathRewrite": { "^/backend": "" }
+  }
+}

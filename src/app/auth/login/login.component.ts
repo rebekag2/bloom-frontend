@@ -18,16 +18,7 @@ export class LoginComponent {
     this.authService.login(this.email, this.password).subscribe({
       next: (res) => {
         console.log('Login success:', res);
-
-        // Save tokens if present (leave this as you had it)
-        if ((res as any).accessToken) {
-          localStorage.setItem('accessToken', (res as any).accessToken);
-        }
-        if ((res as any).refreshToken) {
-          localStorage.setItem('refreshToken', (res as any).refreshToken);
-        }
-
-        // Save the REAL user returned by backend
+        // AuthService handles tokens (access token in memory). backend should set refresh token cookie.
         if (res.user) {
           localStorage.setItem('user', JSON.stringify(res.user));
         }
