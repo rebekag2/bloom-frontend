@@ -6,13 +6,18 @@ import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from './shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 import { AuthService } from './services/auth.service';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 export function initAuthFactory(auth: AuthService) {
   return () => {
-    // try to refresh access token on app start if refresh cookie exists
-    return firstValueFrom(auth.refreshAccessToken()).then(() => {}).catch(() => {});
+    return firstValueFrom(
+      auth.refreshAccessToken().pipe(
+        catchError(() => of(null))  
+      )
+    ).catch(() => null);            
   };
 }
 
@@ -28,7 +33,12 @@ export function initAuthFactory(auth: AuthService) {
     BrowserAnimationsModule,
   ],
   providers: [
-    { provide: APP_INITIALIZER, useFactory: initAuthFactory, deps: [AuthService], multi: true }
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initAuthFactory,
+      deps: [AuthService],
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })
