@@ -1,4 +1,8 @@
-<app-top-bar></app-top-bar>
+<app-top-bar
+  [username]="username"
+  (settingsClicked)="goToSettings()"
+  (logoutClicked)="logout()"
+></app-top-bar>
 
 <div class="layout">
 

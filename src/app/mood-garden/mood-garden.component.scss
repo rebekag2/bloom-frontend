@@ -6,7 +6,7 @@
 }
 
 $teal: #4DA6A6;
-$forest-green: #5C9E5C;
+$forest-green: #8ED9A0;
 $soft-green: #7DBF7A;
 $muted-grey: #BFC3C9;
 $card-bg: rgba(255, 255, 255, 0.35);
@@ -52,6 +52,8 @@ $card-bg: rgba(255, 255, 255, 0.35);
   animation:
     fadeIn 0.8s ease forwards,
     sway 4s ease-in-out infinite alternate;
+  pointer-events: auto;
+  z-index: 10;
 }
 
 @keyframes fadeIn {
@@ -295,4 +297,67 @@ $card-bg: rgba(255, 255, 255, 0.35);
     width: calc(100% - 40px);
     margin: 20px auto;
   }
+}
+
+/* BLOOM-STYLE TOOLTIP FOR FLOWERS */
+
+.tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  padding: 0.7rem 1rem;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  font-family: "Quicksand", sans-serif;
+  font-size: 0.8rem;
+  color: #1E5F52;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.tooltip-line {
+  display: flex;
+  gap: 0.3rem;
+  margin: 2px 0;
+  align-items: center;
+}
+
+.tooltip-line.phase .label {
+  font-weight: 600;
+  color: #1E5F52;
+}
+
+.tooltip-line .label {
+  font-weight: 600;
+  color: #1E5F52;
+}
+
+.tooltip-line .value {
+  color: #335f5a;
+}
+
+.badge-canceled {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(217, 83, 79, 0.16);
+  color: #B33A35;
+  font-weight: 600;
+}
+
+/* Show tooltip on hover */
+.tooltip-wrapper:hover .tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-6px);
 }

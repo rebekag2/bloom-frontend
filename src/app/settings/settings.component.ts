@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { SettingsService } from '../services/settings.service';
 import { AuthService } from '../services/auth.service';
+import { LogoutConfirmDialogComponent } from '../home/logout-confirm-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-settings',
@@ -17,7 +20,9 @@ export class SettingsComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private settings: SettingsService,
-    private auth: AuthService
+    private auth: AuthService,
+    private router: Router, 
+    private dialog: MatDialog 
   ) {
     this.form = this.fb.group({
       notificationSound: [false],
@@ -53,6 +58,29 @@ export class SettingsComponent implements OnInit {
       }
     });
   }
+
+     logout(): void {
+      const dialogRef = this.dialog.open(LogoutConfirmDialogComponent, {
+        width: '380px'
+      });
+    
+      dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+        if (!confirmed) return;
+    
+        this.auth.logout().subscribe({
+          next: () => {
+            this.auth.clearTokens();
+            localStorage.removeItem('user');
+            this.router.navigate(['/auth/login']);
+          },
+          error: () => {
+            this.auth.clearTokens();
+            localStorage.removeItem('user');
+            this.router.navigate(['/auth/login']);
+          }
+        });
+      });
+    }
 
   onSubmit(): void {
     const userId = this.auth.getUserId();

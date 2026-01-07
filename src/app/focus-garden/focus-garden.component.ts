@@ -3,6 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import Chart from 'chart.js/auto';
 import { SettingsService } from '../services/settings.service';
 import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router';
+import { LogoutConfirmDialogComponent } from '../home/logout-confirm-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 interface SessionWithEmotions {
   id: number;
@@ -19,6 +22,10 @@ interface GardenItem {
   x: number;
   y: number;
   scale: number;
+
+  // ⭐ Tooltip data
+  plantedAt: string;
+  focusedMinutes: number;
 }
 
 type ViewMode = 'week' | 'month' | 'year';
@@ -42,27 +49,61 @@ export class FocusGardenComponent implements OnInit, AfterViewInit, OnDestroy {
   totalSessions = 0;
   completedSessions = 0;
 
-  firstDayOfWeek: 'Luni' | 'Duminică' = 'Luni'; // ⭐ Loaded from settings
+  firstDayOfWeek: 'Luni' | 'Duminică' = 'Luni';
 
   private chart: Chart | null = null;
+  username = '';
 
   constructor(
     private http: HttpClient,
     private settingsService: SettingsService,
-    private auth: AuthService
+    private auth: AuthService,
+    private router: Router,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
-    const userId = this.auth.getUserId();
+    const user = this.auth.getUser();
+    if (user) {
+      this.username = user.username;
+    }
 
-      if (userId) {
-        this.settingsService.getSettings(userId).subscribe(settings => {
-          this.firstDayOfWeek = settings.firstDayOfWeek;
-          this.loadSessions();
-        });
-      }
-  } 
-  
+    const userId = this.auth.getUserId();
+    if (userId) {
+      this.settingsService.getSettings(userId).subscribe(settings => {
+        this.firstDayOfWeek = settings.firstDayOfWeek;
+        this.loadSessions();
+      });
+    }
+  }
+
+  goToSettings() {
+    this.router.navigate(['/settings']);
+  }
+
+  logout(): void {
+    const dialogRef = this.dialog.open(LogoutConfirmDialogComponent, {
+      width: '380px'
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (!confirmed) return;
+
+      this.auth.logout().subscribe({
+        next: () => {
+          this.auth.clearTokens();
+          localStorage.removeItem('user');
+          this.router.navigate(['/auth/login']);
+        },
+        error: () => {
+          this.auth.clearTokens();
+          localStorage.removeItem('user');
+          this.router.navigate(['/auth/login']);
+        }
+      });
+    });
+  }
+
   loadSessions() {
     this.http.get<SessionWithEmotions[]>('http://localhost:3000/focus-sessions/with-emotions')
       .subscribe(sessions => {
@@ -112,16 +153,17 @@ export class FocusGardenComponent implements OnInit, AfterViewInit, OnDestroy {
     this.updateView();
   }
 
-  get intervalLabel(): string {
-    if (this.mode === 'week') {
-      const { start, end } = this.getWeekRange(this.currentDate);
-      return `${start.toLocaleDateString()} - ${end.toLocaleDateString()}`;
-    } else if (this.mode === 'month') {
-      return this.currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
-    } else {
-      return this.currentDate.getFullYear().toString();
-    }
+get intervalLabel(): string {
+  if (this.mode === 'week') {
+    const { start, end } = this.getWeekRange(this.currentDate);
+    return `${start.toLocaleDateString('ro-RO')} - ${end.toLocaleDateString('ro-RO')}`;
+  } else if (this.mode === 'month') {
+    return this.currentDate.toLocaleString('ro-RO', { month: 'long', year: 'numeric' });
+  } else {
+    return this.currentDate.getFullYear().toString();
   }
+}
+
 
   // --- CORE UPDATE ---
 
@@ -152,7 +194,16 @@ export class FocusGardenComponent implements OnInit, AfterViewInit, OnDestroy {
         : '/assets/illustrations/dead-tree.png',
       x: 0,
       y: 0,
-      scale: 0.9 + Math.random() * 0.2
+      scale: 0.9 + Math.random() * 0.2,
+
+      plantedAt: new Date(s.startTime).toLocaleString('ro-RO', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }),
+      focusedMinutes: s.durationMinutes || 0
     }));
 
     this.placeItems(plants);
@@ -235,9 +286,7 @@ export class FocusGardenComponent implements OnInit, AfterViewInit, OnDestroy {
     let labels: string[] = [];
     let data: number[] = [];
 
-    // ⭐ WEEK MODE WITH FIRST-DAY-OF-WEEK LOGIC
     if (this.mode === 'week') {
-
       if (this.firstDayOfWeek === 'Luni') {
         labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
       } else {
@@ -248,21 +297,20 @@ export class FocusGardenComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.filteredSessions.forEach(s => {
         const d = new Date(s.startTime);
-        const jsDay = d.getDay(); // 0=Sun, 1=Mon...
+        const jsDay = d.getDay();
 
         let dayIndex;
 
         if (this.firstDayOfWeek === 'Luni') {
-          dayIndex = (jsDay + 6) % 7; // Monday = 0
+          dayIndex = (jsDay + 6) % 7;
         } else {
-          dayIndex = jsDay; // Sunday = 0
+          dayIndex = jsDay;
         }
 
         data[dayIndex] += s.durationMinutes || 0;
       });
     }
 
-    // ⭐ MONTH MODE (unchanged)
     else if (this.mode === 'month') {
       const year = this.currentDate.getFullYear();
       const month = this.currentDate.getMonth();
@@ -278,7 +326,6 @@ export class FocusGardenComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
 
-    // ⭐ YEAR MODE (unchanged)
     else {
       labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       data = new Array(12).fill(0);
@@ -305,7 +352,7 @@ export class FocusGardenComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private getWeekRange(date: Date) {
     const d = new Date(date);
-    const day = d.getDay(); // 0=Sun, 1=Mon...
+    const day = d.getDay();
 
     let start = new Date(d);
 

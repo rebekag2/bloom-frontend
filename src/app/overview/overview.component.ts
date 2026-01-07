@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
+import { LogoutConfirmDialogComponent } from '../home/logout-confirm-dialog.component';
+import { Dialog } from '@angular/cdk/dialog';
+import { MatDialog } from '@angular/material/dialog';
 
 interface GardenItem {
   icon: string;
@@ -18,17 +23,56 @@ interface GardenItem {
 export class OverviewComponent implements OnInit {
 
   items: GardenItem[] = [];
+  username = '';
 
   // Stats for right panel
   totalSessions = 0;
   dominantEmotion: string | null = null;
   dominantEmotionIcon: string | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,  
+    private router: Router, 
+    private auth: AuthService,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
+     const user = this.auth.getUser();
+    if (user) {
+      this.username = user.username;
+    }
+    
     this.loadOverviewGarden();
   }
+
+    goToSettings() { 
+    this.router.navigate(['/settings']); 
+  } 
+
+   logout(): void {
+    const dialogRef = this.dialog.open(LogoutConfirmDialogComponent, {
+      width: '380px'
+    });
+  
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (!confirmed) return;
+  
+      this.auth.logout().subscribe({
+        next: () => {
+          this.auth.clearTokens();
+          localStorage.removeItem('user');
+          this.router.navigate(['/auth/login']);
+        },
+        error: () => {
+          this.auth.clearTokens();
+          localStorage.removeItem('user');
+          this.router.navigate(['/auth/login']);
+        }
+      });
+    });
+  }
+  
 
   loadOverviewGarden() {
     this.http.get<any[]>('http://localhost:3000/focus-sessions/with-emotions')

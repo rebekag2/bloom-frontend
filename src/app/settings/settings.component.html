@@ -1,4 +1,6 @@
-<app-top-bar></app-top-bar> 
+<app-top-bar
+    (logoutClicked)="logout()"
+></app-top-bar> 
 
 <div class="settings-wrapper">
   <img src="assets/illustrations/corner.png" class="decor-bottom-left" alt="" />
@@ -14,7 +16,7 @@
           <span>Sunet notificări</span>
           <label class="switch">
             <input type="checkbox" formControlName="notificationSound" />
-            <span class="slider round"></span>
+            <span class="slider round"></span>  
           </label>
         </label>
       </div>

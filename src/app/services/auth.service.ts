@@ -95,4 +95,21 @@ export class AuthService {
   isLoggedIn(): boolean {
     return !!this.accessToken;
   }
+
+  // ⭐ NEW METHODS
+  requestPasswordReset(email: string) {
+    return this.http.post(
+      `${this.baseUrl}/auth/request-password-reset`,
+      { email },
+      { withCredentials: true }
+    );
+  }
+
+  resetPassword(token: string, newPassword: string) {
+    return this.http.post(
+      `${this.baseUrl}/auth/reset-password`,
+      { token, newPassword },
+      { withCredentials: true }
+    );
+  }
 }

@@ -237,3 +237,57 @@
     margin: 20px auto;
   }
 }
+/* Ensure hover works */
+.plant {
+  pointer-events: auto;
+  position: absolute;
+  z-index: 10;
+}
+
+/* Tooltip wrapper */
+.tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* Tooltip bubble */
+.tooltip {
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  padding: 0.7rem 1rem;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  font-family: "Quicksand", sans-serif;
+  font-size: 0.85rem;
+  color: #1E5F52;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.tooltip-line {
+  display: flex;
+  gap: 0.3rem;
+  margin: 2px 0;
+}
+
+.tooltip-line .label {
+  font-weight: 600;
+  color: #1E5F52;
+}
+
+.tooltip-line .value {
+  color: #335f5a;
+}
+
+/* Show tooltip on hover */
+.tooltip-wrapper:hover .tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-6px);
+}

@@ -16,6 +16,8 @@
         <label for="password">Parolă</label>
         <input id="password" type="password" name="password" [(ngModel)]="password" required placeholder="••••••••" />
 
+        <a routerLink="/auth/forgot-password" class="forgot-link">Ai uitat parola?</a>
+
         <button type="submit" [disabled]="loginForm.invalid" class="btn-submit">
           Autentifică-te
         </button>

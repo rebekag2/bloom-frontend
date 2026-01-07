@@ -1,4 +1,8 @@
-<app-top-bar></app-top-bar>
+<app-top-bar
+  [username]="username"
+  (settingsClicked)="goToSettings()"
+  (logoutClicked)="logout()"
+></app-top-bar>
 
 <div class="layout">
 
@@ -11,7 +15,21 @@
            [style.top.%]="plant.y"
            [style.transform]="'translate(-50%, -50%) scale(' + plant.scale + ')'">
 
-        <img [src]="plant.icon" class="tree-img" />
+        <div class="tooltip-wrapper">
+          <img [src]="plant.icon" class="tree-img" />
+
+          <div class="tooltip">
+            <div class="tooltip-line">
+              <span class="label">Plantat:</span>
+              <span class="value">{{ plant.plantedAt }}</span>
+            </div>
+            <div class="tooltip-line">
+              <span class="label">Minute concentrate:</span>
+              <span class="value">{{ plant.focusedMinutes }}</span>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -21,14 +39,12 @@
 
     <div class="controls-wrapper">
 
-      <!-- Floating glass segmented control -->
       <div class="segment-control">
         <button [class.active]="mode === 'week'" (click)="setMode('week')">Săptămână</button>
         <button [class.active]="mode === 'month'" (click)="setMode('month')">Lună</button>
         <button [class.active]="mode === 'year'" (click)="setMode('year')">An</button>
       </div>
 
-      <!-- Navigation arrows -->
       <div class="interval-nav">
         <button (click)="prevInterval()">&lt;</button>
         <span>{{ intervalLabel }}</span>
@@ -37,12 +53,10 @@
 
     </div>
 
-    <!-- Chart -->
     <div class="chart-card">
       <canvas id="focusChart"></canvas>
     </div>
 
-    <!-- Stats -->
     <div class="stats-row">
       <div class="stat-card">
         <h3>{{ totalSessions }}</h3>

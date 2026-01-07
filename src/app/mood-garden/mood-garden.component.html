@@ -1,4 +1,8 @@
-<app-top-bar></app-top-bar>
+<app-top-bar
+  [username]="username"
+  (settingsClicked)="goToSettings()"
+  (logoutClicked)="logout()"
+></app-top-bar>
 
 <div class="layout">
 
@@ -10,7 +14,32 @@
            [style.left.%]="flower.x"
            [style.top.%]="flower.y"
            [style.transform]="'translate(-50%, -50%) scale(' + flower.scale + ')'">
-        <img [src]="flower.icon" class="flower-img" />
+
+        <div class="tooltip-wrapper">
+          <img [src]="flower.icon" class="flower-img" />
+
+          <div class="tooltip">
+            <div class="tooltip-line phase">
+              <span class="label">
+                {{ flower.phase === 'before' ? 'Înainte de sesiune' : 'După sesiune' }}
+              </span>
+              <span *ngIf="flower.canceled === 1 && flower.phase === 'before'" class="badge-canceled">
+                sesiune anulată
+              </span>
+            </div>
+
+            <div class="tooltip-line">
+              <span class="label">Moment:</span>
+              <span class="value">{{ flower.plantedAt }}</span>
+            </div>
+
+            <div class="tooltip-line">
+              <span class="label">Emoție:</span>
+              <span class="value">{{ flower.emotion || 'Neclar' }}</span>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>

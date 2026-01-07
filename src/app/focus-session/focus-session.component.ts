@@ -1,10 +1,12 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, DoCheck } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FocusSessionService } from '../services/focus-session.service';
 import { MatDialog } from '@angular/material/dialog';
 import { FocusSessionDialogComponent } from '../focus-session/focus-session-dialog.component';
 import { SettingsService } from '../services/settings.service';
 import { AuthService } from '../services/auth.service';
+import { LogoutConfirmDialogComponent } from '../home/logout-confirm-dialog.component';
+import { FocusCancelDialogComponent } from './focus-cancel-dialog.component';
 
 @Component({
   selector: 'app-focus-session',
@@ -12,7 +14,7 @@ import { AuthService } from '../services/auth.service';
   templateUrl: './focus-session.component.html',
   styleUrls: ['./focus-session.component.scss']
 })
-export class FocusSessionComponent implements OnInit, OnDestroy {
+export class FocusSessionComponent implements OnInit, OnDestroy, DoCheck {
 
   sessionId!: number;
   duration!: number;
@@ -21,23 +23,23 @@ export class FocusSessionComponent implements OnInit, OnDestroy {
   timerRunning = false;
   interval: any;
 
-  // ⭐ NEW: store user setting
   notificationSoundEnabled = false;
 
   private originalNavigate: any;
+  private originalTitle = document.title;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private dialog: MatDialog,
     private focusSessionService: FocusSessionService,
-    private settingsService: SettingsService,   // ⭐ NEW
-    private auth: AuthService                   // ⭐ NEW
+    private settingsService: SettingsService,
+    private auth: AuthService
   ) {}
 
   ngOnInit(): void {
 
-    // ⭐ LOAD USER SETTINGS
+    // Load user settings
     const userId = this.auth.getUserId();
     if (userId) {
       this.settingsService.getSettings(userId).subscribe(settings => {
@@ -51,6 +53,7 @@ export class FocusSessionComponent implements OnInit, OnDestroy {
     this.timeLeft = this.duration * 60;
     this.totalTime = this.timeLeft;
 
+    // Override navigation to prevent accidental leaving
     this.originalNavigate = this.router.navigate.bind(this.router);
 
     this.router.navigate = async (...args: any[]) => {
@@ -58,11 +61,12 @@ export class FocusSessionComponent implements OnInit, OnDestroy {
         return this.originalNavigate(...args);
       }
 
-      const confirmCancel = confirm(
-        'You have an active focus session. Do you want to cancel it?'
-      );
+      const dialogRef = this.dialog.open(FocusCancelDialogComponent, {
+        width: '380px'
+      });
 
-      if (!confirmCancel) return false;
+      const confirmed = await dialogRef.afterClosed().toPromise();
+      if (!confirmed) return false;
 
       const focusedMinutes = Math.floor((this.totalTime - this.timeLeft) / 60);
 
@@ -83,6 +87,10 @@ export class FocusSessionComponent implements OnInit, OnDestroy {
     if (this.originalNavigate) {
       this.router.navigate = this.originalNavigate;
     }
+
+    // Restore tab title
+    document.title = this.originalTitle;
+
     window.removeEventListener('beforeunload', this.beforeUnloadHandler);
   }
 
@@ -93,27 +101,25 @@ export class FocusSessionComponent implements OnInit, OnDestroy {
     }
   };
 
-  // ⭐ PLAY SOUND FUNCTION
   playSound() {
     const audio = new Audio('/assets/sounds/notification.wav');
     audio.volume = 0.8;
     audio.play().catch(() => {});
   }
 
-  // 🌱 Evolution stage
+  // Plant evolution logic
   get plantStage(): string {
     if (this.progress < 0.33) return 'sprout';
     if (this.progress < 0.66) return 'plant';
     return 'tree';
   }
 
-  // 🌿 Growth scale (smooth)
   get plantScale(): number {
     return 0.7 + this.progress * 0.6;
   }
 
-  // 🌳 Pop animation trigger
   justEvolved = false;
+  private lastStage = 'sprout';
 
   ngDoCheck() {
     const stage = this.plantStage;
@@ -124,20 +130,15 @@ export class FocusSessionComponent implements OnInit, OnDestroy {
     }
   }
 
-  private lastStage = 'sprout';
-
-  // ⭐ PROGRESS FOR CIRCULAR TIMER (0–1)
   get progress(): number {
     if (!this.totalTime) return 0;
     return (this.totalTime - this.timeLeft) / this.totalTime;
   }
 
-  // ⭐ CIRCLE CIRCUMFERENCE
   get circleCircumference(): number {
     return 2 * Math.PI * 52;
   }
 
-  // ⭐ ADJUST TIME
   adjustTime(minutes: number) {
     if (this.timerRunning) return;
 
@@ -156,16 +157,20 @@ export class FocusSessionComponent implements OnInit, OnDestroy {
     this.interval = setInterval(() => {
       this.timeLeft--;
 
+      // Update tab title every second
+      document.title = `${this.formatTime(this.timeLeft)} · Bloom`;
+
       if (this.timeLeft <= 0) {
         clearInterval(this.interval);
         this.timerRunning = false;
 
-        // ⭐ PLAY SOUND ONLY IF ENABLED
+        // Restore title
+        document.title = this.originalTitle;
+
         if (this.notificationSoundEnabled) {
           this.playSound();
         }
 
-        // ⭐ THEN OPEN THE DIALOG
         this.openPostSessionDialog();
       }
     }, 1000);
@@ -177,21 +182,82 @@ export class FocusSessionComponent implements OnInit, OnDestroy {
     return `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
   }
 
+  // ⭐ CANCEL SESSION WITH DIALOG
   cancelSession() {
-    const confirmCancel = confirm('Are you sure you want to cancel this session?');
-    if (!confirmCancel) return;
+    const dialogRef = this.dialog.open(FocusCancelDialogComponent, {
+      width: '380px'
+    });
 
-    clearInterval(this.interval);
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (!confirmed) return;
 
-    const focusedMinutes = Math.floor((this.totalTime - this.timeLeft) / 60);
+      clearInterval(this.interval);
 
-    this.timerRunning = false;
-    this.router.navigate = this.originalNavigate;
+      // Restore title
+      document.title = this.originalTitle;
 
-    this.focusSessionService.cancelSession(this.sessionId, {
-      focusedMinutes
-    }).subscribe(() => {
-      this.router.navigate(['/overview']);
+      const focusedMinutes = Math.floor((this.totalTime - this.timeLeft) / 60);
+
+      this.timerRunning = false;
+      this.router.navigate = this.originalNavigate;
+
+      this.focusSessionService.cancelSession(this.sessionId, {
+        focusedMinutes
+      }).subscribe(() => {
+        this.router.navigate(['/overview']);
+      });
+    });
+  }
+
+  // ⭐ SETTINGS CLICK WHILE TIMER RUNNING
+  onSettingsClick() {
+    if (!this.timerRunning) {
+      this.router.navigate(['/settings']);
+      return;
+    }
+
+    const dialogRef = this.dialog.open(FocusCancelDialogComponent, {
+      width: '380px'
+    });
+
+    dialogRef.afterClosed().subscribe(async (confirmed: boolean) => {
+      if (!confirmed) return;
+
+      clearInterval(this.interval);
+
+      const focusedMinutes = Math.floor((this.totalTime - this.timeLeft) / 60);
+
+      await this.focusSessionService.cancelSession(this.sessionId, {
+        focusedMinutes
+      }).toPromise();
+
+      this.router.navigate(['/settings']);
+    });
+  }
+
+  // ⭐ LOGOUT CLICK WHILE TIMER RUNNING
+  onLogoutClick() {
+    if (!this.timerRunning) {
+      this.dialog.open(LogoutConfirmDialogComponent, { width: '380px' });
+      return;
+    }
+
+    const dialogRef = this.dialog.open(FocusCancelDialogComponent, {
+      width: '380px'
+    });
+
+    dialogRef.afterClosed().subscribe(async (confirmed: boolean) => {
+      if (!confirmed) return;
+
+      clearInterval(this.interval);
+
+      const focusedMinutes = Math.floor((this.totalTime - this.timeLeft) / 60);
+
+      await this.focusSessionService.cancelSession(this.sessionId, {
+        focusedMinutes
+      }).toPromise();
+
+      this.dialog.open(LogoutConfirmDialogComponent, { width: '380px' });
     });
   }
 

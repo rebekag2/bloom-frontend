@@ -3,12 +3,20 @@ import { HttpClient } from '@angular/common/http';
 import Chart from 'chart.js/auto';
 import { SettingsService } from '../services/settings.service';
 import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { LogoutConfirmDialogComponent } from '../home/logout-confirm-dialog.component';
 
 interface FlowerItem {
   icon: string;
   x: number;
   y: number;
   scale: number;
+
+  phase: 'before' | 'after';
+  plantedAt: string;
+  emotion: string | null;
+  canceled: number;
 }
 
 interface SessionEmotion {
@@ -35,10 +43,11 @@ export class MoodGardenComponent implements OnInit, AfterViewInit, OnDestroy {
 
   mode: ViewMode = 'week';
   currentDate: Date = new Date();
+  username = '';
 
   insights: string[] = [];
 
-  firstDayOfWeek: 'Luni' | 'Duminică' = 'Luni'; 
+  firstDayOfWeek: 'Luni' | 'Duminică' = 'Luni';
 
   private moodChart: Chart | null = null;
 
@@ -46,19 +55,52 @@ export class MoodGardenComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private http: HttpClient,
-    private settingsService: SettingsService, 
-    private auth: AuthService                
+    private settingsService: SettingsService,
+    private auth: AuthService,
+    private router: Router,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
-    const userId = this.auth.getUserId();
+    const user = this.auth.getUser();
+    if (user) {
+      this.username = user.username;
+    }
 
+    const userId = this.auth.getUserId();
     if (userId) {
       this.settingsService.getSettings(userId).subscribe(settings => {
         this.firstDayOfWeek = settings.firstDayOfWeek;
         this.loadSessions();
       });
     }
+  }
+
+  goToSettings() {
+    this.router.navigate(['/settings']);
+  }
+
+  logout(): void {
+    const dialogRef = this.dialog.open(LogoutConfirmDialogComponent, {
+      width: '380px'
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (!confirmed) return;
+
+      this.auth.logout().subscribe({
+        next: () => {
+          this.auth.clearTokens();
+          localStorage.removeItem('user');
+          this.router.navigate(['/auth/login']);
+        },
+        error: () => {
+          this.auth.clearTokens();
+          localStorage.removeItem('user');
+          this.router.navigate(['/auth/login']);
+        }
+      });
+    });
   }
 
   ngAfterViewInit() {
@@ -128,20 +170,45 @@ export class MoodGardenComponent implements OnInit, AfterViewInit, OnDestroy {
       const list: FlowerItem[] = [];
 
       if (session.emotionBefore) {
+        const startDate = new Date(session.startTime);
+
         list.push({
           icon: this.mapEmotionToFlower(session.emotionBefore),
           x: 0,
           y: 0,
-          scale: 0.9 + Math.random() * 0.2
+          scale: 0.9 + Math.random() * 0.2,
+          phase: 'before',
+          plantedAt: startDate.toLocaleString('ro-RO', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          }),
+          emotion: session.emotionBefore,
+          canceled: session.canceled
         });
       }
 
       if (session.canceled === 0 && session.emotionAfter) {
+        const endDate = new Date(session.startTime);
+        endDate.setMinutes(endDate.getMinutes() + (session.durationMinutes || 0));
+
         list.push({
           icon: this.mapEmotionToFlower(session.emotionAfter),
           x: 0,
           y: 0,
-          scale: 0.9 + Math.random() * 0.2
+          scale: 0.9 + Math.random() * 0.2,
+          phase: 'after',
+          plantedAt: endDate.toLocaleString('ro-RO', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          }),
+          emotion: session.emotionAfter,
+          canceled: session.canceled
         });
       }
 
@@ -210,8 +277,18 @@ export class MoodGardenComponent implements OnInit, AfterViewInit, OnDestroy {
     let declined = 0;
     let total = 0;
 
-    const timeBuckets = { dim: { imp: 0, dec: 0, total: 0 }, pranz: { imp: 0, dec: 0, total: 0 }, seara: { imp: 0, dec: 0, total: 0 } };
-    const durationBuckets = { short: { imp: 0, dec: 0, total: 0 }, medium: { imp: 0, dec: 0, total: 0 }, long: { imp: 0, dec: 0, total: 0 } };
+    const timeBuckets = {
+      dim: { imp: 0, dec: 0, total: 0 },
+      pranz: { imp: 0, dec: 0, total: 0 },
+      seara: { imp: 0, dec: 0, total: 0 }
+    };
+
+    const durationBuckets = {
+      short: { imp: 0, dec: 0, total: 0 },
+      medium: { imp: 0, dec: 0, total: 0 },
+      long: { imp: 0, dec: 0, total: 0 }
+    };
+
     const transitions: Record<string, number> = {};
 
     this.filteredSessions.forEach(s => {
@@ -260,7 +337,12 @@ export class MoodGardenComponent implements OnInit, AfterViewInit, OnDestroy {
         this.insights.push(`Starea a scăzut în <span class="insight-number insight-down">▼ ${declineRate}%</span> dintre sesiuni.`);
     }
 
-    const timeLabelMap: Record<string, string> = { dim: 'dimineața', pranz: 'la prânz', seara: 'seara' };
+    const timeLabelMap: Record<string, string> = {
+      dim: 'dimineața',
+      pranz: 'la prânz',
+      seara: 'seara'
+    };
+
     let bestTime: string | null = null;
     let bestTimeRate = 0;
 
@@ -353,7 +435,10 @@ export class MoodGardenComponent implements OnInit, AfterViewInit, OnDestroy {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        layout: { padding: { top: 20 } },
+
+        // ⭐ FIX TOP CUT-OFF
+        layout: { padding: { top: 30 } },
+
         plugins: {
           legend: {
             display: true,
@@ -363,14 +448,17 @@ export class MoodGardenComponent implements OnInit, AfterViewInit, OnDestroy {
         scales: {
           y: {
             min: 0,
-            max: this.emotionOrder.length - 1,
+
+            // ⭐ LOWER MAX SLIGHTLY SO TOP DOT IS VISIBLE
+            max: this.emotionOrder.length - 0.8,
+
             ticks: {
               stepSize: 1,
               color: '#2F3A2F',
               font: { size: 11 },
               callback: (value: any) => this.emotionOrder[value] || ''
             },
-            grid: { color: 'rgba(0,0,0,0.04)' }
+            grid: { color: 'rgba(0,0,0,0.08)' }
           },
           x: {
             ticks: { color: '#2F3A2F', maxRotation: 0, autoSkip: true, font: { size: 11 } },
@@ -414,26 +502,38 @@ export class MoodGardenComponent implements OnInit, AfterViewInit, OnDestroy {
     const afterDots = valid.map(s => emotionDotColor(s.emotionAfter));
 
     this.moodChart.data.labels = labels;
+
+    // ⭐ ONLY COLORS CHANGED HERE
     this.moodChart.data.datasets = [
       {
         label: 'Înainte',
         data: beforeData,
-        borderColor: '#BFC3C9',
-        backgroundColor: 'rgba(191,195,201,0.25)',
+
+        // ⭐ NEW COLOR (steel blue-grey)
+        borderColor: '#546E7A',
+        backgroundColor: 'rgba(84,110,122,0.25)',
+
+        borderWidth: 3,
         fill: false,
         tension: 0.35,
-        pointRadius: 5,
+        pointRadius: 6,
+        pointHoverRadius: 8,
         pointBackgroundColor: beforeDots,
         pointBorderColor: beforeDots
       },
       {
         label: 'După',
         data: afterData,
-        borderColor: '#7DBF7A',
-        backgroundColor: 'rgba(125,191,122,0.25)',
+
+        // ⭐ NEW COLOR (deep natural green)
+        borderColor: '#2E7D32',
+        backgroundColor: 'rgba(46,125,50,0.25)',
+
+        borderWidth: 3,
         fill: true,
         tension: 0.35,
-        pointRadius: 5,
+        pointRadius: 6,
+        pointHoverRadius: 8,
         pointBackgroundColor: afterDots,
         pointBorderColor: afterDots
       }
@@ -442,7 +542,7 @@ export class MoodGardenComponent implements OnInit, AfterViewInit, OnDestroy {
     this.moodChart.update();
   }
 
-  // ⭐ WEEK RANGE WITH FIRST-DAY-OF-WEEK LOGIC
+  // WEEK RANGE WITH FIRST-DAY-OF-WEEK LOGIC
   private getRangeForMode(mode: ViewMode, date: Date) {
     if (mode === 'week') return this.getWeekRange(date);
     if (mode === 'month') return this.getMonthRange(date);
@@ -451,7 +551,7 @@ export class MoodGardenComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private getWeekRange(date: Date) {
     const d = new Date(date);
-    const day = d.getDay(); // 0=Sun, 1=Mon...
+    const day = d.getDay();
 
     let start = new Date(d);
 
@@ -472,7 +572,7 @@ export class MoodGardenComponent implements OnInit, AfterViewInit, OnDestroy {
     return { start, end };
   }
 
-    private getMonthRange(date: Date) {
+  private getMonthRange(date: Date) {
     const start = new Date(date.getFullYear(), date.getMonth(), 1);
     const end = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
     return { start, end };

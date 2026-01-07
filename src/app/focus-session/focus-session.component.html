@@ -1,4 +1,8 @@
-<app-top-bar></app-top-bar>
+<app-top-bar
+  (settingsClicked)="onSettingsClick()"
+  (logoutClicked)="onLogoutClick()"
+></app-top-bar>
+
 
 <div class="session-page">
   <div class="session-card">
